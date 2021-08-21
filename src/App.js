@@ -2,6 +2,7 @@ import React from 'react'
 import Header from './components/Header'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import Login from './components/Login';
+import Home from './components/Home';
 
 function App() {
     
@@ -15,7 +16,10 @@ function App() {
                 
                 />
             </Route>
-            <Route path="/home" component={Header}/>
+            <Route path="/home">
+                <Header/>
+                <Home/>
+            </Route>
                 </Switch>
             </div>
         </Router>
