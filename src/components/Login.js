@@ -1,4 +1,4 @@
-import React, { useState} from 'react'
+import React, { useEffect, useState} from 'react'
 import EmailIcon from '@material-ui/icons/Email';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import AppleIcon from '@material-ui/icons/Apple';
@@ -15,17 +15,20 @@ function Login({fetchUsername}) {
     const[userPassword, setUserPassword]  = useState('');
 
     const [containerClass, setContainerClass] = useState(false); //css 
+
+    
     
     const history = useHistory();
 
     const handleSignup = (e) => {
         e.preventDefault();
         auth.createUserWithEmailAndPassword(username,userPassword).then((userCredential) => {
-            if(userCredential){
+            /*if(userCredential){
                 let user = userCredential.user;
                 let name = user.email.substr(0,user.email.indexOf('@'));
+                localStorage.setItem('username',name);
                 fetchUsername(name);
-        }
+        }*/
             setUsername("");
             setUserPassword('');
             history.push('/home');
@@ -35,19 +38,21 @@ function Login({fetchUsername}) {
     const handleLogin = (e) => {
         e.preventDefault();
         auth.signInWithEmailAndPassword(username, userPassword).then(userCredential => {
-            let user = userCredential.user;
+            /*let user = userCredential.user;
             let name = user.email.substr(0,user.email.indexOf('@'));
+            localStorage.setItem('username',name);*/
             setUsername("");
             setUserPassword('');
-            fetchUsername(name);
+            //fetchUsername(name);
             history.push('/home');
         }).catch(error => alert(error.message));
     }
 
     const handleSocialMediaLogin = (auth1) => {
         auth.signInWithPopup(auth1).then((result) => {
-            let name = result.user.email.substr(0,result.user.email.indexOf('@'));
-            fetchUsername(name);
+            /*let name = result.user.email.substr(0,result.user.email.indexOf('@'));
+            localStorage.setItem('username',name);
+            fetchUsername(name);*/
             history.push('/home');
         }).catch((error) => {
             console.log(error.message);
