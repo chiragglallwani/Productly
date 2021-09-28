@@ -6,6 +6,8 @@ import Home from './components/Home';
 import { auth } from './firebase/firebase';
 import { fetchUsername } from './store/actions';
 import { connect } from 'react-redux';
+import Checkout from './components/Checkout';
+import Payment from './components/Payment';
 
 function App({fetchUsername}) {
     const [searchInput, setSearchInput] = useState('');
@@ -18,7 +20,7 @@ function App({fetchUsername}) {
                 //window.localStorage.setItem('username',name);
             }
         })
-    },[]);
+    });
 
     return (
         <Router>
@@ -34,6 +36,17 @@ function App({fetchUsername}) {
                 <Header searchInput={searchInput} setSearchInput={setSearchInput}/>
                 <Home setSearchInput={setSearchInput}/>
             </Route>
+            <Route path="/checkout">
+                <Header searchInput={searchInput} setSearchInput={setSearchInput}/>
+                <Checkout/>
+            </Route>
+
+            <Route path="/payment">
+                <Header/>
+                <Payment/>
+            </Route>
+
+
                 </Switch>
             </div>
         </Router>

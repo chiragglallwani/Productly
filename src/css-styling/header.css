@@ -8,11 +8,13 @@
     box-sizing: border-box;
 }
 
-.header > h1{
+.brand__name{
+    font-weight: 600;
     color: white;
     font-size: 2rem;
     margin: 0 1%;
     flex: 0.7;
+    text-decoration: none !important;
 }
 
 .header > .search__bar{
@@ -68,6 +70,11 @@
     border: none;
     cursor: pointer;
     color: white;
+    text-decoration: none;
+}
+
+.cart__icon > span{
+    font-size: 0.8rem;
 }
 
 .user_name{
@@ -76,7 +83,7 @@
 
 
 @media (max-width: 870px){
-    .header > h1{
+    .brand__name{
         font-size: 1.5rem;
         margin: 2% 1.5%;
     }
@@ -96,7 +103,7 @@
 
 
 @media (max-width: 570px) {
-    .header > h1{
+    .brand__name{
         font-size: 1.5rem;
     }
 
@@ -115,7 +122,7 @@
         width: 100vw;
     }
 
-    .header > h1{
+    .brand__name{
         font-size: 0.8rem;
     }
 

@@ -63,7 +63,8 @@ function Home({searchInputTerm, searchInputAction, setSearchInput}) {
             {/** DisplayProducts */}
 
             <div className="product__section">
-                    {products.map(product => <Product key={product.id} product={product}/>)}
+                    {products.length !==0 ? 
+                    products.map(product => <Product key={product.id} product={product}/>): (<p style={{margin: '25% 150%'}}>Loading</p>)}
             </div>
         </div>
     )
