@@ -87,6 +87,7 @@
 
 @media (max-width: 280px){
     .filter__section{
+        display: none;
         flex: 0.1;
         padding: 1%;
     }

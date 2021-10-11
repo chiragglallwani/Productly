@@ -157,3 +157,47 @@
         display: none;
     }
 }
+
+@media (max-width: 300px) {
+    
+    .header{
+        width: 100vw;
+    }
+
+    .brand__name{
+        font-size: 0.8rem;
+        margin-right: 0;
+    }
+
+    .search__bar{
+        margin-left: 0;
+       max-width: 35%;
+       height: 30% !important;
+    }
+
+    .search__input{
+        max-width: 80%;
+        margin-top: -10%;
+    }
+
+    .search__button{
+        margin: -10% 0 0 5%;
+    }
+
+
+    .user__auth{
+        font-size: 0.1rem;
+    }
+
+    .user__auth > .hello__text{
+        display: none;
+    }
+
+    .user_name{
+        font-size: 0.5rem;
+    }
+
+    .cart__icon > span{
+        display: none;
+    }
+}

@@ -6,11 +6,11 @@ import PersonOutlineOutlinedIcon from '@material-ui/icons/PersonOutlineOutlined'
 import {connect} from 'react-redux'
 import {auth, db } from '../firebase/firebase';
 import { useHistory } from 'react-router-dom';
-import {searchInputAction} from '../store/actions';
+import {fetchListFromDB, searchInputAction} from '../store/actions';
 import {Link} from 'react-router-dom'
 
-function Header({ username, searchInputAction, searchInput, setSearchInput}) {
-    const [productList, setProductList] = useState(0);
+function Header({ username, searchInputAction, searchInput, setSearchInput, productList}) {
+    //const [productList, setProductList] = useState(0);
     const history = useHistory();
     const handleAuth = () => {
         auth.signOut();
@@ -21,14 +21,10 @@ function Header({ username, searchInputAction, searchInput, setSearchInput}) {
         searchInputAction(searchInput);
     }
 
-    useEffect(() => {
-        db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
-            setProductList(doc.data()?.productList);
-        }).catch(err => console.warn(err));
-    }, [productList])
+    
     return (
         <div className="header">
-            <Link className="brand__name" to="/home">Productly</Link>
+            <Link className="brand__name" to="/home" onClick={() => { searchInputAction(''); setSearchInput('')}}>Productly</Link>
             <div className="search__bar">
                 <input onChange={e => setSearchInput(e.target.value)} value={searchInput} type="text" placeholder="Search product name here..." className="search__input"/>
                 <SearchIcon onClick={handleSearchinput} className="search__button"/>

@@ -2,40 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import "../css-styling/checkout.css";
 import CheckoutProduct from './CheckoutProduct';
-import { auth, db } from '../firebase/firebase';
 import { useHistory } from 'react-router-dom';
 
-function Checkout({ username, newProductList}){
+function Checkout({ username, productList, totalAmount}){
 
-    const [productList, setProductList] = useState([]);
-    const [totalAmount, setTotalAmount] = useState(0);
     const history = useHistory();
-    useEffect(() => {
-        const abortController = new AbortController();
-        db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
-            setProductList(doc.data()?.productList);
-            setTotalAmount(doc.data()?.totalAmount);
-        }).catch(err => console.warn(err));
-
-        return () => {
-            abortController.abort();
-        }
-    },[username, newProductList]);
-    //, [username, newProductList]
-
-    useEffect(() => {
-        const abortController = new AbortController();
-        db.collection('users').doc(auth.currentUser?.uid).get().then((doc) => {
-            if(doc.data()){
-                setProductList(doc.data()?.productList);
-                setTotalAmount(doc.data()?.totalAmount);
-            }
-        }).catch(err => console.warn(err));
-
-        return () => {
-            abortController.abort();
-        }
-    })
 
 
     return (

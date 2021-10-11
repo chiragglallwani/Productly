@@ -8,15 +8,26 @@ export default (state = [], action) => {
             //console.log("before setting payload:", action.payload);
             //console.log("DB list before setting", action.newList);
             //console.log(("db amount before setting", action.totalAmount));
-            db.collection('users').doc(auth.currentUser?.uid).set({
-                productList: [...action.newList, action.payload],
-                totalAmount: getCartTotal([...action.newList, action.payload]),
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            //console.log(action.newList);
+            if(action.newList === undefined){
+                db.collection('users').doc(auth.currentUser?.uid).set({
+                    productList: [ action.payload],
+                    totalAmount: getCartTotal([ action.payload]),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            else{
+                db.collection('users').doc(auth.currentUser?.uid).set({
+                    productList: [...action.newList, action.payload],
+                    totalAmount: getCartTotal([...action.newList, action.payload]),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            
             //console.log("after setting payload:", action.payload);
             //console.log("DB list after setting", action.newList);
             //console.log(("db amount after setting", action.totalAmount));
-            return state;
+            return 0;
         case 'REMOVE_FROM_CART':
             //console.log("inside productReducer",action.productList)
             const index = action.productList.findIndex(item => item.id === action.id);
@@ -37,7 +48,14 @@ export default (state = [], action) => {
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }).catch(err => console.log(err))
 
-            return action.productList;
+            return 0;
+
+        case 'EMPTY__CART':
+            db.collection('users').doc(auth.currentUser?.uid).update({
+                productList: [],
+                totalAmount: 0.00,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => alert(err));
         default:
             return state;
     }
