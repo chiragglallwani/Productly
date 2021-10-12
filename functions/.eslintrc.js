@@ -12,6 +12,6 @@ module.exports = {
     quotes: ["error", "double"],
   },
   parserOptions: {
-    "ecmaversion": 2020,
+    "ecmaVersion": 2020,
   },
 };
