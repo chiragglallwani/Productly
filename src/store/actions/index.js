@@ -2,8 +2,17 @@ import firebase from 'firebase'
 import { auth, db} from '../../firebase/firebase';
 export const FETCHUSERNAME = "FETCHUSERNAME";
 
-export const getCartTotal = productList => 
-    productList?.reduce((amount, item) => Math.round(item.price + amount, 2), 0);
+export const getCartTotal = (productList,totalAmount) => {
+    //console.log(productList);
+    productList?.map(item => {
+        totalAmount += item.price;
+    })
+    //console.log("amount", totalAmount);
+    totalAmount = Math.round((totalAmount + Number.EPSILON) *100) /100;
+    //console.log("new Amount", totalAmount);
+    return totalAmount;
+}
+   
 
     /**    USER ACTIONS */
 export const fetchUsername = username => {

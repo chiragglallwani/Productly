@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux';
 import "../css-styling/product.css"
 import {removeFromCart} from '../store/actions/index'
-function CheckoutProduct({product, removeFromCart}) {
+function CheckoutProduct({processing, product, removeFromCart}) {
 
     const removeTheItem = (e) => {
         e.preventDefault();
@@ -18,7 +18,7 @@ function CheckoutProduct({product, removeFromCart}) {
                 <h5>{product.title}</h5>
                 <p>Price: ${product.price}</p>
             </div>
-                <button onClick={removeTheItem} className="product__footer">Remove the Item</button>
+                <button disabled={processing ? true : false} onClick={removeTheItem} className="product__footer">Remove the Item</button>
             
         </div>
     )

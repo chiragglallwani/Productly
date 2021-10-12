@@ -12,14 +12,14 @@ export default (state = [], action) => {
             if(action.newList === undefined){
                 db.collection('users').doc(auth.currentUser?.uid).set({
                     productList: [ action.payload],
-                    totalAmount: getCartTotal([ action.payload]),
+                    totalAmount: getCartTotal([ action.payload], 0),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
             else{
                 db.collection('users').doc(auth.currentUser?.uid).set({
                     productList: [...action.newList, action.payload],
-                    totalAmount: getCartTotal([...action.newList, action.payload]),
+                    totalAmount: getCartTotal([...action.newList, action.payload], 0),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
@@ -44,7 +44,7 @@ export default (state = [], action) => {
 
             db.collection('users').doc(auth.currentUser?.uid).update({
                 productList: action.productList,
-                totalAmount: getCartTotal(action.productList),
+                totalAmount: getCartTotal(action.productList, 0),
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }).catch(err => console.log(err))
 
@@ -56,6 +56,7 @@ export default (state = [], action) => {
                 totalAmount: 0.00,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }).catch(err => alert(err));
+            return state;
         default:
             return state;
     }

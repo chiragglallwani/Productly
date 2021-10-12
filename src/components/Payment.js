@@ -25,7 +25,7 @@ const style = {
     p: 4,
   };
 
-function Payment({productList, totalAmount, deleteDataFromDB}) {
+function Payment({processing, setProcessing, productList, totalAmount, deleteDataFromDB}) {
 
     const history = useHistory();
 
@@ -40,7 +40,7 @@ function Payment({productList, totalAmount, deleteDataFromDB}) {
     const [error, setError] = useState(null);
     const [disabled, setDisabled] = useState(true);
     const [succeeded, setSucceeded] = useState(false);
-    const [processing, setProcessing] = useState("");
+    
     const [clientSecret, setClientSecret] = useState('');
 
     const stripe = useStripe();
@@ -52,7 +52,7 @@ function Payment({productList, totalAmount, deleteDataFromDB}) {
       const getCleintSecret = async () => {
         const res = await axios({
           method: 'post',
-          url: `/payments/create?total=${totalAmount*100}`, //accept in cents if using dollar currency
+          url: `/payments/create?total=${Math.round(totalAmount*100, 2)}`, //accept in cents if using dollar currency
         });
         setClientSecret(res.data.clientSecret)
       }
@@ -60,7 +60,7 @@ function Payment({productList, totalAmount, deleteDataFromDB}) {
       getCleintSecret();
     }, [productList]);
 
-    console.log("The client secret >>>", clientSecret);  
+    //console.log("The client secret >>>", clientSecret);  
 
     const handleModalOpen = () => setOpen(true);
     const handleModalClose = () => setOpen(false);
@@ -152,7 +152,7 @@ function Payment({productList, totalAmount, deleteDataFromDB}) {
             </div>
             <div className="payment__productlist">
               <h5>Review items for delivery:</h5>
-              <div className="payment__productitems">{productList.map((product, i) => <CheckoutProduct key={i} product={product}/>)}</div>
+              <div className="payment__productitems">{productList.map((product, i) => <CheckoutProduct processing={processing} key={i} product={product}/>)}</div>
             </div>
         </div>
     )

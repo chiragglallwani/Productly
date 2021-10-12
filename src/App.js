@@ -19,6 +19,9 @@ function App({fetchUsername}) {
     const [productList, setProductList] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
 
+    /**Stripe validation */
+    const [processing, setProcessing] = useState("");
+
     useEffect(() => {
         auth.onAuthStateChanged(authUser => {
             if(authUser){
@@ -38,8 +41,11 @@ function App({fetchUsername}) {
                         try{
                             db.collection('users').doc(auth.currentUser?.uid).onSnapshot(snapshot => {
                                 let products = snapshot.data();
-                                setProductList(products.productList);
+                                if(products !== undefined){
+                                    setProductList(products.productList);
                                  setTotalAmount(products.totalAmount);
+                                }
+                                //console.log("products",products)
                             });
                         }catch(err) {
                             console.log("Error:", err);
@@ -50,7 +56,6 @@ function App({fetchUsername}) {
                 }
             })
         }
-        console.log("app useeffect called");
         return () => {
             componentMounted = false;
         }
@@ -65,18 +70,18 @@ function App({fetchUsername}) {
                 <Login />
             </Route>
             <Route path="/home">
-                <Header searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
+                <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
                 <Home setSearchInput={setSearchInput}/>
             </Route>
             <Route path="/checkout">
-                <Header searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
-                <Checkout productList={productList} totalAmount={totalAmount} />
+                <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
+                <Checkout processing={processing} productList={productList} totalAmount={totalAmount} />
             </Route>
 
             <Route path="/payment">
-                <Header searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
+                <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
                 <Elements stripe={promise}>
-                    <Payment productList={productList} totalAmount={totalAmount}/>
+                    <Payment processing={processing} setProcessing={setProcessing} productList={productList} totalAmount={totalAmount}/>
                 </Elements>
             </Route>
 
