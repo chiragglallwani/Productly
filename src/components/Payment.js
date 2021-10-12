@@ -85,7 +85,7 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
         setProcessing(false);
         deleteDataFromDB();
         history.replace('/home');
-      })
+      }).catch(err => console.log(err));
     }
 
 
