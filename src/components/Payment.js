@@ -73,12 +73,12 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
     const handleSubmit = async (e) => {
       e.preventDefault();
       setProcessing(true);
-
+      console.log("The client secret is: ", clientSecret);
       const payload = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: element.getElement(CardElement)
         }
-      }).then(({paymentIntent}) => {
+      }).then(() => {
         //payment confirmation
         setSucceeded(true);
         setError(null);
