@@ -46,17 +46,22 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
     const stripe = useStripe();
     const element = useElements();
 
+    const getCleintSecret = async () => {
+      const res = await axios({
+        method: 'post',
+        url: `/payments/create?total=${Math.round(totalAmount*100, 2)}`, //accept in cents if using dollar currency
+      }).then((res) => setClientSecret(res.data.clientSecret));
+    }
 
     useEffect(() => {
-
-      const getCleintSecret = async () => {
-        const res = await axios({
+      console.log("payment useeffect called");
+      console.log("useEffect client secret:",clientSecret);
+      /*const getCleintSecret = async () => {
+        await axios({
           method: 'post',
           url: `/payments/create?total=${Math.round(totalAmount*100, 2)}`, //accept in cents if using dollar currency
-        });
-        setClientSecret(res.data.clientSecret)
-      }
-
+        }).then((res) => setClientSecret(res.data.clientSecret));
+      }*/
       getCleintSecret();
     }, [productList]);
 
@@ -74,18 +79,21 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
       e.preventDefault();
       setProcessing(true);
       console.log("The client secret is: ", clientSecret);
-      const payload = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: element.getElement(CardElement)
-        }
-      }).then(() => {
-        //payment confirmation
-        setSucceeded(true);
-        setError(null);
-        setProcessing(false);
-        deleteDataFromDB();
-        history.replace('/home');
-      }).catch(err => console.log(err));
+      if(clientSecret !== undefined){
+        await getCleintSecret();
+        const payload = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: element.getElement(CardElement)
+          }
+        }).then(() => {
+          //payment confirmation
+          setSucceeded(true);
+          setError(null);
+          setProcessing(false);
+          deleteDataFromDB();
+          history.replace('/home');
+        }).catch(err => console.log(err));
+      }
     }
 
 
