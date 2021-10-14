@@ -11,6 +11,10 @@ const app = express();
 
 // -Middlewares
 app.use(cors({origin: true}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+})
 app.use(express.json());
 
 // - API routes
