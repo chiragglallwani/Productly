@@ -54,18 +54,8 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
     }
 
     useEffect(() => {
-      console.log("payment useeffect called");
-      console.log("useEffect client secret:",clientSecret);
-      /*const getCleintSecret = async () => {
-        await axios({
-          method: 'post',
-          url: `/payments/create?total=${Math.round(totalAmount*100, 2)}`, //accept in cents if using dollar currency
-        }).then((res) => setClientSecret(res.data.clientSecret));
-      }*/
       getCleintSecret();
     }, [productList]);
-
-    //console.log("The client secret >>>", clientSecret);  
 
     const handleModalOpen = () => setOpen(true);
     const handleModalClose = () => setOpen(false);
@@ -78,7 +68,6 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
     const handleSubmit = async (e) => {
       e.preventDefault();
       setProcessing(true);
-      console.log("The client secret is: ", clientSecret);
       if(clientSecret !== undefined){
         await getCleintSecret();
         const payload = await stripe.confirmCardPayment(clientSecret, {
