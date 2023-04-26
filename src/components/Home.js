@@ -16,7 +16,9 @@ function Home({searchInputTerm, searchInputAction, setSearchInput}) {
     useEffect(() => {
 
         if(filterValue === "" && searchInputTerm === ""){
-            axios.get('https://fakestoreapi.com/products').then(res => setProducts(res.data))
+            axios.get('https://fakestoreapi.com/products').then(res => {
+                setProducts(res.data);
+            console.log(res.data)})
         }
         else if(filterValue !== "" && searchInputTerm === ""){
             axios.get(`https://fakestoreapi.com/products/category/${filterValue}`).then(res => setProducts(res.data));
@@ -31,8 +33,6 @@ function Home({searchInputTerm, searchInputAction, setSearchInput}) {
                         setProducts(arr);
                     }
                 );
-                console.log(data);
-                console.log("Search is not empty:", searchInputTerm);
         }
         else if (filterValue === "" && searchInputTerm !== ""){
             axios.get('https://fakestoreapi.com/products').then(res => {

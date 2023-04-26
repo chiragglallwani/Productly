@@ -46,7 +46,7 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
     const stripe = useStripe();
     const element = useElements();
 
-    const getCleintSecret = async () => {
+    const getClientSecret = async () => {
       const res = await axios({
         method: 'post',
         url: `/payments/create?total=${Math.round(totalAmount*100, 2)}`, //accept in cents if using dollar currency
@@ -54,7 +54,7 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
     }
 
     useEffect(() => {
-      getCleintSecret();
+      getClientSecret();
     }, [productList]);
 
     const handleModalOpen = () => setOpen(true);
@@ -69,7 +69,7 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
       e.preventDefault();
       setProcessing(true);
       if(clientSecret !== undefined){
-        await getCleintSecret();
+        await getClientSecret();
         const payload = await stripe.confirmCardPayment(clientSecret, {
           payment_method: {
             card: element.getElement(CardElement)
