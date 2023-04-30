@@ -2,47 +2,89 @@ import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@ma
 import axios from 'axios';
 import React, {useState, useEffect} from 'react'
 import { connect } from 'react-redux';
+import api from '../API/axios';
 import '../css-styling/home.css'
 import { searchInputAction } from '../store/actions';
 import Product from './Product';
+import ProductsList from '../utils/Products.json';
 
 function Home({searchInputTerm, searchInputAction, setSearchInput}) {
     const [filterValue, setFilterValue] = useState('');
     const[products, setProducts] = useState([]);
+    const[categories, setCategories] = useState([]);
 
     const handleChange = (event) => {
         setFilterValue(event.target.value);
     }
-    useEffect(() => {
+
+    useEffect(async() => {
+        if(categories.length === 0){
+            try{
+                // For Production Purpose
+                await api.get('/readOnlyCategory').then(res => setCategories(res.data));
+
+            }catch(error){
+                console.log(error)
+            }
+        }
 
         if(filterValue === "" && searchInputTerm === ""){
-            axios.get('https://fakestoreapi.com/products').then(res => {
-                setProducts(res.data);
-            console.log(res.data)})
+            try{
+                // For Production Purpose
+                //await api.get('/read').then(res => setProducts(res.data));
+                
+                //For Developement
+                setProducts(ProductsList.products);
+            }catch(error){
+                console.log(error);
+            }
         }
         else if(filterValue !== "" && searchInputTerm === ""){
-            axios.get(`https://fakestoreapi.com/products/category/${filterValue}`).then(res => setProducts(res.data));
+            // For Production Purpose
+            //api.get(`/filter/${filterValue}`).then(res => setProducts(res.data));
+
+            //For Development
+            let filterArray = ProductsList.products.filter(function(item){
+                return item.category.toUpperCase().includes(filterValue.toUpperCase());
+            });
+            setProducts(filterArray);
         }
         else if(filterValue !== "" && searchInputTerm !== ""){
-            let data = [];
-                axios.get(`https://fakestoreapi.com/products/category/${filterValue}`).then(res => 
+            // For Production Purpose
+            /*api.get(`/filter/${filterValue}`).then(res => 
                     {
                         let  arr = res.data.filter(function(item){
                             return item.title.toUpperCase().includes(searchInputTerm.toUpperCase());
                         })
                         setProducts(arr);
                     }
-                );
+                );*/
+            
+            // For Development
+            let filterArray = ProductsList.products.filter(function(item){
+                return item.category.toUpperCase().includes(filterValue.toUpperCase()) &&
+                item.title.toUpperCase().includes(searchInputTerm.toUpperCase());
+            });
+            setProducts(filterArray);
         }
         else if (filterValue === "" && searchInputTerm !== ""){
-            axios.get('https://fakestoreapi.com/products').then(res => {
+            // For Production Purpose
+            /*await api.get('/read').then(res => {
                let  arr = res.data.filter(function(item){
                     return item.title.toUpperCase().includes(searchInputTerm.toUpperCase());
                 })
                 setProducts(arr);
-            });
+            });*/
+
+            //For Development
+            let arr = ProductsList.products.filter(function(item){
+                return item.title.toUpperCase().includes(searchInputTerm.toUpperCase());
+            })
+            setProducts(arr)
         }
     }, [filterValue, searchInputTerm]);
+
+
     return (
         <div className="home__page">
             {/**Filter by categories */}
@@ -51,11 +93,11 @@ function Home({searchInputTerm, searchInputAction, setSearchInput}) {
                 <FormControl component="fieldset">
                     <FormLabel className="filter__header" component="legend" onClick={() => {setFilterValue(''); searchInputAction(''); setSearchInput('')}} style={{cursor: 'pointer'}}>Filter By Categories</FormLabel>
                     <RadioGroup  aria-label="filter-by-categories" name="filter__categories" value={filterValue} onChange={handleChange}>
-                    <FormControlLabel className="radio__group" value="electronics" control={<Radio />} label="Electronics" />
-                    <FormControlLabel className="radio__group" value="jewelery" control={<Radio />} label="Jwelery" />
-                    <FormControlLabel className="radio__group" value="men's clothing" control={<Radio />} label="Men Clothing" />
-                    <FormControlLabel className="radio__group" value="women's clothing" control={<Radio />} label="Women Clothing" />
-      
+                        {
+                            categories.map(categoryName => (
+                                <FormControlLabel key={categoryName} className="radio__group" value={categoryName} control={<Radio />} label={categoryName} />
+                            ))
+                        }
                     </RadioGroup>
                 </FormControl>
                 

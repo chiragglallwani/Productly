@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux';
 import "../css-styling/product.css"
 import {removeFromCart} from '../store/actions/index'
-function CheckoutProduct({processing, product, removeFromCart}) {
+function Cart({processing, product, removeFromCart}) {
 
     const removeTheItem = (e) => {
         e.preventDefault();
@@ -12,7 +12,7 @@ function CheckoutProduct({processing, product, removeFromCart}) {
     return (
         <div className="product__card">
             <div className="product__header">
-                <img className="product__image" src={product.image} alt="product-items"/>
+                <img className="product__image" src={product.thumbnail} alt="product-items"/>
             </div>
             <div className="product__body">
                 <h5>{product.title}</h5>
@@ -24,4 +24,4 @@ function CheckoutProduct({processing, product, removeFromCart}) {
     )
 }
 
-export default connect(null, {removeFromCart})(CheckoutProduct)
+export default connect(null, {removeFromCart})(Cart)

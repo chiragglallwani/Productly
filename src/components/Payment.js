@@ -10,7 +10,7 @@ import axios from '../API/axios'
 import { useHistory } from 'react-router-dom';
 import { deleteDataFromDB } from '../store/actions';
 import { connect } from 'react-redux';
-import CheckoutProduct from './CheckoutProduct';
+import Cart from './Cart';
 
 /**Style for model */
 const style = {
@@ -149,7 +149,7 @@ function Payment({processing, setProcessing, productList, totalAmount, deleteDat
             </div>
             <div className="payment__productlist">
               <h5>Review items for delivery:</h5>
-              <div className="payment__productitems">{productList.map((product, i) => <CheckoutProduct processing={processing} key={i} product={product}/>)}</div>
+              <div className="payment__productitems">{productList.map((product, i) => <Cart processing={processing} key={i} product={product}/>)}</div>
             </div>
         </div>
     )

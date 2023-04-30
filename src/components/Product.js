@@ -13,7 +13,7 @@ function Product({product, addtoCart }) {
     return (
         <div className="product__card">
             <div className="product__header">
-                <img className="product__image" src={product.image} alt="product-image"/>
+                <img className="product__image" src={product.thumbnail} alt="product-image"/>
             </div>
             <div className="product__body">
                 <h5>{product.title}</h5>

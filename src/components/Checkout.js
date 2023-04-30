@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import "../css-styling/checkout.css";
-import CheckoutProduct from './CheckoutProduct';
+import Cart from './Cart';
 import { useHistory } from 'react-router-dom';
 
 function Checkout({ processing, username, productList, totalAmount}){
@@ -13,7 +13,7 @@ function Checkout({ processing, username, productList, totalAmount}){
         <div className="checkout">
             <div className="checkout__productList">
                 <p>Hello {username}, Here's your items</p>  
-                {productList?.map((product,i) => <CheckoutProduct processing={processing}  key={i} product={product}/> )}
+                {productList?.map((product,i) => <Cart processing={processing}  key={i} product={product}/> )}
             </div>
             <div className="checkout__total">
                 <p>Total Items: {productList?.length}</p>
