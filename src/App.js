@@ -10,6 +10,7 @@ import Checkout from './components/Checkout';
 import Payment from './components/Payment';
 import {loadStripe} from '@stripe/stripe-js'
 import {Elements} from '@stripe/react-stripe-js';
+import Login2 from './components/Login2';
 
 
 const promise = loadStripe('pk_test_51Hd8tDDdwnwgCXY0n33CYFmWHxZAcpGED08SomyY9NZmA6Ji9oounkhZhEmXzPNcAhPbrRzNAeGtFqZY59TUSSiU0049j6KUoK');
@@ -65,28 +66,30 @@ function App({fetchUsername}) {
         <Router>
             <div className="app">
 
-                <Switch>
+            <Switch>
                 <Route path="/" exact>
-                <Login />
-            </Route>
-            <Route path="/home">
-                <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
-                <Home setSearchInput={setSearchInput}/>
-            </Route>
-            <Route path="/checkout">
-                <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
-                <Checkout processing={processing} productList={productList} totalAmount={totalAmount} />
-            </Route>
+                    <Login />
+                </Route>
+                <Route path="/home">
+                    <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
+                    <Home setSearchInput={setSearchInput}/>
+                </Route>
+                <Route path="/checkout">
+                    <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
+                    <Checkout processing={processing} productList={productList} totalAmount={totalAmount} />
+                </Route>
 
-            <Route path="/payment">
-                <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
-                <Elements stripe={promise}>
-                    <Payment processing={processing} setProcessing={setProcessing} productList={productList} totalAmount={totalAmount}/>
-                </Elements>
-            </Route>
+                <Route path="/payment">
+                    <Header processing={processing} searchInput={searchInput} setSearchInput={setSearchInput} productList={productList}/>
+                    <Elements stripe={promise}>
+                        <Payment processing={processing} setProcessing={setProcessing} productList={productList} totalAmount={totalAmount}/>
+                    </Elements>
+                </Route>
+                <Route path="/login2">
+                    <Login2 />
+                </Route>
 
-
-                </Switch>
+            </Switch>
             </div>
         </Router>
     )
