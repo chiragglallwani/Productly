@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import "../css-styling/checkout.css";
 import CheckoutProduct from './CheckoutProduct';
@@ -26,7 +26,6 @@ function Checkout({ processing, username, productList, totalAmount}){
 }
 
 const mapStateToProps = (state) => {
-    //console.log("inside checkout",state.products);
     return {
         username: state.users,
         newProductList: state.products,

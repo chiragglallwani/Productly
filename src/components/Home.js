@@ -22,7 +22,6 @@ function Home({searchInputTerm, searchInputAction, setSearchInput}) {
             axios.get(`https://fakestoreapi.com/products/category/${filterValue}`).then(res => setProducts(res.data));
         }
         else if(filterValue !== "" && searchInputTerm !== ""){
-            let data = [];
                 axios.get(`https://fakestoreapi.com/products/category/${filterValue}`).then(res => 
                     {
                         let  arr = res.data.filter(function(item){
@@ -31,8 +30,6 @@ function Home({searchInputTerm, searchInputAction, setSearchInput}) {
                         setProducts(arr);
                     }
                 );
-                console.log(data);
-                console.log("Search is not empty:", searchInputTerm);
         }
         else if (filterValue === "" && searchInputTerm !== ""){
             axios.get('https://fakestoreapi.com/products').then(res => {

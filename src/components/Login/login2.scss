@@ -1,0 +1,216 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Proza+Libre&display=swap");
+@import "../../css-styling/variable.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+input {
+  font-family: "Poppins", sans-serif;
+
+  .login-page {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .triangle {
+      background-color: $primary;
+      height: 100vh;
+      width: 100%;
+      border-bottom: 100vh solid whitesmoke;
+      border-left: 100vw solid $primary;
+      z-index: -1;
+      backdrop-filter: blur(15px);
+    }
+
+    .card {
+      position: absolute;
+      width: 25%;
+      /*max-width: 88%; for mobile*/
+      min-height: fit-content;
+      background-color: #fff;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px grey;
+
+      .card-head {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        .card-header {
+          color: #363636;
+          font-family: "Proza Libre", sans-serif;
+          margin-bottom: 10px;
+        }
+
+        .card-head-tab {
+          width: 100%;
+          height: 2.5em;
+          display: flex;
+
+          .tab-business,
+          .tab-shopping {
+            border: none;
+            background-color: transparent;
+            font-size: smaller;
+            width: 50%;
+            height: 100%;
+          }
+
+          .tab-business:hover,
+          .tab-shopping:hover {
+            //background-color: rgb(217, 216, 216);
+            border-radius: 20px;
+            border: 1px solid $skyblue;
+          }
+
+          .active {
+            background-color: $primary; // #04befe;
+            color: whitesmoke;
+            border-radius: 20px;
+          }
+        }
+      }
+
+      .card-body {
+        width: 100%;
+        display: inline-flex;
+        flex-direction: column;
+
+        .btn {
+          width: 150px;
+          height: 49px;
+          border: none;
+          outline: none;
+          border-radius: 49px;
+          cursor: pointer;
+          background-color: #5995fd;
+          color: #fff;
+          text-transform: uppercase;
+          font-weight: 600;
+          margin: 10px 0;
+          transition: 0.5s;
+
+          &:hover {
+            background-color: #4d84e2;
+          }
+        }
+
+        .sign-in-form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          flex-direction: column;
+          position: relative;
+          min-width: 0;
+          vertical-align: top;
+
+          .MuiTextField-root {
+            margin-bottom: 15px;
+            width: 100%;
+          }
+
+          .forgot-password {
+            text-decoration: underline;
+            color: #0415fe;
+            font-size: small;
+            background-color: transparent;
+            border: none;
+
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+
+        .sign-up-form {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-direction: column;
+          position: relative;
+          min-width: 0;
+          vertical-align: top;
+
+          .MuiFormGroup-root {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            .MuiTextField-root {
+              margin-bottom: 15px;
+              width: 48%;
+            }
+          }
+
+          .MuiTextField-root {
+            margin-bottom: 15px;
+            width: 100%;
+          }
+        }
+
+        .signup-text {
+          margin: 10px auto;
+          color: darkgrey;
+          font-size: 13px;
+
+          .register-btn {
+            text-decoration: underline;
+            background-color: transparent;
+            border: none;
+            color: rgba(58, 56, 56, 0.774);
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: $break-point-xxl) {
+  .card {
+    width: 35% !important;
+  }
+}
+
+@media screen and (max-width: $break-point-xl) {
+  .card {
+    width: 38% !important;
+  }
+}
+
+@media screen and (max-width: $break-point-lg) {
+  .card {
+    width: 45% !important;
+  }
+}
+
+@media screen and (max-width: $break-point-md) {
+  .card {
+    width: 55% !important;
+  }
+}
+
+@media screen and (max-width: $break-point-sm) {
+  .card {
+    width: 85% !important;
+  }
+}
+
+@media screen and (max-width: $break-point-xs) {
+  .card {
+    width: 95% !important;
+  }
+}
