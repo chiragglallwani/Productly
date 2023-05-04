@@ -9,7 +9,7 @@ const ForgotPassword = ({ isShopping }) => {
   const INITIAL_USERNAME_STATE = {
     value: "",
     error: false,
-    errorMessage: "Please enter your user name",
+    errorMessage: "Please enter your username",
   };
 
   const [userIsShopping, setUserIsShopping] = useState(isShopping);
