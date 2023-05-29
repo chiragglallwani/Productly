@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+}
+
+body {
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll;
+  #menu-categoryappbar {
+    .MuiPaper-root {
+      columns: 2;
+      padding: 10px;
+
+      .MuiList-root {
+        padding: 0;
+      }
+    }
+  }
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}

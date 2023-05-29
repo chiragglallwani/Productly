@@ -5,7 +5,7 @@ import firebase from "firebase";
 import { auth, db } from "../../firebase/firebase";
 import { Button, FormGroup } from "@mui/material";
 import "./login2.scss";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 import { userIsShopping } from "../../store/actions";
 
 const Login = ({ userIsShopping }) => {
@@ -235,7 +235,21 @@ const Login = ({ userIsShopping }) => {
               }
             });
         })
-        .catch((error) => alert(error.message));
+        .catch((error) => {
+          setSignInFormValues({
+            ...signInFormValues,
+            username: {
+              errorMessage: "Username did not found",
+              ...signInFormValues.username.value,
+              error: true,
+            },
+            password: {
+              errorMessage: "OR The password is invalid",
+              error: true,
+              ...signInFormValues.password.value,
+            },
+          });
+        });
     } else {
       auth
         .signInWithEmailAndPassword(
@@ -262,7 +276,21 @@ const Login = ({ userIsShopping }) => {
               }
             });
         })
-        .catch((error) => alert(error.message));
+        .catch((error) =>
+          setSignInFormValues({
+            ...signInFormValues,
+            username: {
+              errorMessage: "Username did not found",
+              ...signInFormValues.username.value,
+              error: true,
+            },
+            password: {
+              errorMessage: "OR The password is invalid",
+              error: true,
+              ...signInFormValues.password.value,
+            },
+          })
+        );
     }
   };
 

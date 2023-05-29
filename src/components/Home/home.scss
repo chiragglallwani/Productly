@@ -1,0 +1,106 @@
+@import "../../css-styling/variable.scss";
+.home__page {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  flex-direction: column;
+
+  .product__section {
+    display: grid;
+    position: absolute;
+  }
+
+  @media (max-width: $break-point-lg) {
+    .homepage__banner {
+      height: 900px;
+      width: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0),
+          rgba(0, 0, 0, 0) 40%,
+          #fff 80%
+        ),
+        url("../../assets/Productly992×900.png"); //Homepage banner
+    }
+    .product__section {
+      top: 50%;
+      grid-template-columns: repeat(2, 50%) !important;
+      column-gap: 1% !important;
+    }
+  }
+
+  @media (max-width: $break-point-xxl) {
+    .homepage__banner {
+      height: 750px;
+      width: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0),
+          rgba(0, 0, 0, 0) 40%,
+          #fff 80%
+        ),
+        url("../../assets/Productly1400×750.png"); //Homepage banner
+    }
+    .product__section {
+      grid-template-columns: repeat(3, 33%);
+      top: 60%;
+      max-width: 1200px;
+    }
+  }
+
+  @media (max-width: $break-point-md) {
+    .homepage__banner {
+      height: 1000px;
+      width: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0),
+          rgba(0, 0, 0, 0) 40%,
+          #fff 80%
+        ),
+        url("../../assets/Productly768×1000.png"); //Homepage banner
+    }
+  }
+
+  @media (max-width: $break-point-sm) {
+    .product__section {
+      top: 40%;
+      display: grid;
+      grid-template-columns: repeat(1, 100%) !important;
+    }
+  }
+
+  @media (min-width: $break-point-xxl) {
+    .homepage__banner {
+      height: 900px;
+      width: 100%;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0),
+          rgba(0, 0, 0, 0) 40%,
+          #fff 80%
+        ),
+        url("../../assets/Productly2000×900.png"); //Homepage banner
+    }
+
+    .product__section {
+      top: 70%;
+      grid-template-columns: repeat(3, 33%);
+      column-gap: 5%;
+      gap: 10px;
+      max-width: 1200px;
+    }
+  }
+}
+
+/*Responsive design*/
