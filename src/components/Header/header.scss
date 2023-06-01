@@ -3,7 +3,7 @@
 .header {
   width: 100%;
   height: max-content;
-  background-color: $theme-color; /*#9932CC*/
+  background-color: #ff914d; //$theme-color; /*#9932CC*/
   box-sizing: border-box;
   justify-content: space-around;
   align-items: center;
@@ -42,8 +42,8 @@
     .category__menu {
       margin-right: 20px;
       button {
-        background-color: $theme-color;
-        color: whitesmoke;
+        background-color: #ff914d; //$theme-color;
+        color: white;
         text-transform: capitalize;
         font-size: 1rem;
       }

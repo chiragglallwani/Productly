@@ -4,10 +4,21 @@ import { connect } from "react-redux";
 import api from "../../API/axios";
 import "./home.scss";
 import { searchInputAction } from "../../store/actions";
-import Product from "../../components/Product";
+import Product from "../../components/Product/Product";
 import ProductsList from "../../utils/Products.json";
+import { Drawer } from "@mui/material";
+import Cart from "../Cart/Cart";
 
-function Home({ searchInputTerm, selectedCategory }) {
+function Home({
+  searchInputTerm,
+  selectedCategory,
+  openCart,
+  setOpenCart,
+  processing,
+  productList,
+  totalAmount,
+  handleCartToggleDrawer,
+}) {
   const [products, setProducts] = useState([]);
 
   useEffect(async () => {
@@ -76,18 +87,7 @@ function Home({ searchInputTerm, selectedCategory }) {
   return (
     <div className="home__page">
       {/**Filter by categories */}
-      <div className="homepage__banner">
-        {/*<picture>
-          <source media="(min-width: 1024px)" srcSet={HomePageBanner} />
-          <source media="(min-width: 414px)" srcSet={HomePageBannerTablet} />
-          <img
-            className="banner__img"
-            style={{ objectFit: "cover", width: "100%", height: "100%" }}
-            src={HomePageBanner}
-            alt="Home-Banner"
-          />
-  </picture>*/}
-      </div>
+      <div className="homepage__banner" />
       {/** DisplayProducts */}
 
       <div className="product__section">
@@ -99,6 +99,25 @@ function Home({ searchInputTerm, selectedCategory }) {
           <p style={{ margin: "25% 150%" }}>Loading</p>
         )}
       </div>
+      <Drawer
+        PaperProps={{
+          style: { backgroundColor: "whitesmoke" },
+          sx: {
+            width: { xs: "100vw", sm: "400px" },
+          },
+        }}
+        anchor="right"
+        open={openCart}
+        onClose={(event) => handleCartToggleDrawer(false, event)}
+      >
+        <Cart
+          processing={processing}
+          productList={productList}
+          totalAmount={totalAmount}
+          openCart={openCart}
+          setOpenCart={setOpenCart}
+        />
+      </Drawer>
     </div>
   );
 }

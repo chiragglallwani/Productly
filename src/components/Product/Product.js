@@ -1,13 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
-import "../css-styling/product.css";
-import { addtoCart } from "../store/actions";
+import "./product.css";
+import { addToCart } from "../../store/actions";
 import { Rating } from "@mui/material";
 
-function Product({ product, addtoCart }) {
+function Product({ product, addToCart }) {
   const sendToCart = (e) => {
     e.preventDefault();
-    addtoCart(product);
+    addToCart(product, "ADD");
   };
 
   return (
@@ -29,7 +29,13 @@ function Product({ product, addtoCart }) {
             )}
           </span>
         </p>
-        <p>Price: ${product.price}</p>
+        <p>
+          Price:
+          {Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(product.price)}
+        </p>
       </div>
       <button onClick={sendToCart} className="product__footer">
         Add to Cart
@@ -38,4 +44,4 @@ function Product({ product, addtoCart }) {
   );
 }
 
-export default connect(null, { addtoCart })(Product);
+export default connect(null, { addToCart })(Product);

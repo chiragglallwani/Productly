@@ -122,7 +122,7 @@ const Login = ({ userIsShopping }) => {
               orders: [],
               address: "",
               city: "",
-              state: "",
+              province: "",
               postcode: "",
               country: "",
               contact: "",

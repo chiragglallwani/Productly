@@ -10,9 +10,8 @@ import { auth } from "../../firebase/firebase";
 import { useHistory } from "react-router-dom";
 import { searchInputAction } from "../../store/actions";
 import { Link } from "react-router-dom";
-import LinkMUI from "@mui/material/Link";
 import api from "../../API/axios";
-import BrandLogo from "../../assets/Brand_Logo.png";
+import BrandLogo from "../../assets/ProductlyLogo.png";
 import {
   AppBar,
   Box,
@@ -36,12 +35,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import {
-  ChevronLeft,
-  Expand,
-  ExpandLess,
-  ExpandMore,
-} from "@mui/icons-material";
+import { ChevronLeft, ExpandLess, ExpandMore } from "@mui/icons-material";
 
 function Header({
   processing,
@@ -50,6 +44,7 @@ function Header({
   productList,
   selectedCategory,
   setSelectedCategory,
+  handleCartToggleDrawer,
 }) {
   //const [productList, setProductList] = useState(0);
 
@@ -119,7 +114,7 @@ function Header({
         console.log(error);
       }
     }
-  }, []);
+  }, [categories.length]);
 
   useEffect(() => {
     const listener = window.addEventListener("resize", () => {
@@ -161,7 +156,7 @@ function Header({
                   if (selectedCategory !== "") setSelectedCategory("");
                 }}
               >
-                <img className="brand_logo" src={BrandLogo} />
+                <img alt="Brand__Logo" className="brand_logo" src={BrandLogo} />
               </Link>
               <div className="category__menu">
                 <Button
@@ -241,20 +236,18 @@ function Header({
                   </MenuItem>
                 </Menu>
               </div>
-              <LinkMUI
-                className="cart__icon"
-                //aria-disabled={processing ? true : false}
-                href="/checkout"
-                sx={{ display: { xs: "none", sm: "flex" } }}
-              >
-                <Badge badgeContent={productList?.length} color="error">
-                  <LocalMallOutlinedIcon
-                    style={{ pointerEvents: `${processing ? "none" : ""}` }}
-                    fontSize="large"
-                    htmlColor="white"
-                  />
-                </Badge>
-              </LinkMUI>
+              <div className="cart__icon">
+                <IconButton
+                  size="large"
+                  onClick={(event) => handleCartToggleDrawer(true, event)}
+                  color="white"
+                  sx={{ display: { xs: "none", sm: "flex" } }}
+                >
+                  <Badge badgeContent={productList?.length} color="secondary">
+                    <LocalMallOutlinedIcon fontSize="large" htmlColor="white" />
+                  </Badge>
+                </IconButton>
+              </div>
             </Toolbar>
           </AppBar>
           <Drawer
@@ -317,24 +310,17 @@ function Header({
               </List>
             </Collapse>
             <Divider />
-            <ListItem key="Cart" disablePadding>
-              <LinkMUI
-                sx={{ width: "100%", color: "inherit" }}
-                href="/checkout"
-              >
-                <Badge
-                  sx={{ width: "100%" }}
-                  badgeContent={productList?.length}
-                  color="error"
-                >
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <LocalMallOutlinedIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Cart" />
-                  </ListItemButton>
-                </Badge>
-              </LinkMUI>
+            <ListItem
+              onClick={(event) => handleCartToggleDrawer(true, event)}
+              key="Cart"
+              disablePadding
+            >
+              <ListItemButton>
+                <ListItemIcon>
+                  <LocalMallOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Cart" />
+              </ListItemButton>
             </ListItem>
             <Divider />
             <List>

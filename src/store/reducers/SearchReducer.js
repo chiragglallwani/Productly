@@ -1,8 +1,10 @@
-export default (state = '', action) => {
-    switch (action.type) {
-        case 'SEARCH_VALUE':
-            return action.payload;
-        default:
-            return state;
-    }
-}
+const searchReducer = (state = "", action) => {
+  switch (action.type) {
+    case "SEARCH_VALUE":
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export default searchReducer;

@@ -6,8 +6,10 @@
   justify-content: center;
   overflow-x: hidden;
   flex-direction: column;
+  position: relative;
 
   .product__section {
+    position: absolute;
     display: grid;
     position: absolute;
   }
@@ -82,7 +84,7 @@
     .homepage__banner {
       height: 900px;
       width: 100%;
-      background-size: cover;
+      background-size: contain;
       background-repeat: no-repeat;
       background-image: linear-gradient(
           to bottom,

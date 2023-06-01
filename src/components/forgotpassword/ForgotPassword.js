@@ -12,7 +12,7 @@ const ForgotPassword = ({ isShopping }) => {
     errorMessage: "Please enter your username",
   };
 
-  const [userIsShopping, setUserIsShopping] = useState(isShopping);
+  const [userIsShopping] = useState(isShopping);
   const [username, setUsername] = useState(INITIAL_USERNAME_STATE);
 
   const history = useHistory();
@@ -44,11 +44,9 @@ const ForgotPassword = ({ isShopping }) => {
     if (!newFormValues.error) {
       submitForgotPasswordForm(newFormValues, userIsShopping);
     }
-    console.log(newFormValues);
   };
 
   const submitForgotPasswordForm = async (state, isShopping) => {
-    console.log("form Submit", isShopping);
     if (isShopping) {
       await db
         .collection("ShoppingUsers")
@@ -89,10 +87,7 @@ const ForgotPassword = ({ isShopping }) => {
         });
     }
   };
-
-  {
-    /** the layout is pretty same as of login page hence using the same classes to inherit the login page styling */
-  }
+  /** the layout is pretty same as of login page hence using the same classes to inherit the login page styling */
   return (
     <div className="login-page">
       <div className="triangle"></div>
@@ -131,7 +126,6 @@ const ForgotPassword = ({ isShopping }) => {
   );
 };
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     isShopping: state.users,
   };

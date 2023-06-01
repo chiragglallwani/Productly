@@ -4,40 +4,41 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import { auth, db } from "./firebase/firebase";
-import { fetchUsername } from "./store/actions";
-import { connect } from "react-redux";
-import Checkout from "./components/Checkout";
+//import { fetchUsername } from "./store/actions";
+//import Checkout from "./components/Checkout";
 import Payment from "./components/Payment";
-import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import UserAdmin from "./components/dashboard/UserAdmin";
 import ForgotPassword from "./components/forgotpassword/ForgotPassword";
-import Header2 from "./components/Header/Header2";
 import UserAccount from "./components/UserAccount/UserAccount";
+import Checkout from "./components/Checkout/Checkout";
+import { connect } from "react-redux";
+import { fetchUsername, authUserUID } from "./store/actions";
 
-const promise = loadStripe(
-  "pk_test_51Hd8tDDdwnwgCXY0n33CYFmWHxZAcpGED08SomyY9NZmA6Ji9oounkhZhEmXzPNcAhPbrRzNAeGtFqZY59TUSSiU0049j6KUoK"
-);
-
-function App({ fetchUsername }) {
+function App({ fetchUsername, authUserUID }) {
   const [searchInput, setSearchInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [productList, setProductList] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
 
+  // Handle Cart state
+  const [openCart, setOpenCart] = useState(false);
+
   /**Stripe validation */
   const [processing, setProcessing] = useState("");
 
-  useEffect(() => {
-    auth.onAuthStateChanged((authUser) => {
+  useEffect(async () => {
+    await auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         db.collection("ShoppingUsers")
           .doc(authUser.uid)
           .onSnapshot((snapshot) => {
-            fetchUsername(
+            /*fetchUsername(
               snapshot.data()?.firstname ? snapshot.data().firstname : ""
-            );
+            );*/
+            authUserUID(authUser.uid);
           });
+        console.log("Auth User", authUser.uid);
         //window.localStorage.setItem('username',name);
       }
     });
@@ -55,7 +56,18 @@ function App({ fetchUsername }) {
                 .onSnapshot((snapshot) => {
                   let products = snapshot.data();
                   if (products !== undefined) {
-                    setProductList(products.cart);
+                    let sortedProductsBasedOnTimeStamp = products.cart.sort(
+                      (a, b) => {
+                        if (a.createdAt > b.createdAt) {
+                          return 1;
+                        }
+                        if (a.createdAt < b.createdAt) {
+                          return -1;
+                        }
+                        return 0;
+                      }
+                    );
+                    setProductList(sortedProductsBasedOnTimeStamp);
                     setTotalAmount(products.cartTotalAmount);
                   }
                 });
@@ -72,6 +84,15 @@ function App({ fetchUsername }) {
       componentMounted = false;
     };
   }, []);
+
+  const handleCartToggleDrawer = (open, event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    )
+      return;
+    setOpenCart(open);
+  };
 
   return (
     <Router>
@@ -93,14 +114,23 @@ function App({ fetchUsername }) {
               productList={productList}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
+              openCart={openCart}
+              setOpenCart={setOpenCart}
+              handleCartToggleDrawer={handleCartToggleDrawer}
             />
             <Home
+              processing={processing}
+              productList={productList}
+              totalAmount={totalAmount}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
               setSearchInput={setSearchInput}
+              openCart={openCart}
+              setOpenCart={setOpenCart}
+              handleCartToggleDrawer={handleCartToggleDrawer}
             />
           </Route>
-          <Route path="/checkout">
+          {/*<Route path="/checkout">
             <Header
               processing={processing}
               searchInput={searchInput}
@@ -108,31 +138,26 @@ function App({ fetchUsername }) {
               productList={productList}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
+              openCart={openCart}
+              setOpenCart={setOpenCart}
             />
             <Checkout
               processing={processing}
               productList={productList}
               totalAmount={totalAmount}
             />
-          </Route>
+  </Route>*/}
 
-          <Route path="/payment">
-            <Header
-              processing={processing}
-              searchInput={searchInput}
-              setSearchInput={setSearchInput}
-              productList={productList}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-            />
-            <Elements stripe={promise}>
+          <Route path="/checkout">
+            <Checkout />
+            {/*<Elements stripe={promise}>
               <Payment
                 processing={processing}
                 setProcessing={setProcessing}
                 productList={productList}
                 totalAmount={totalAmount}
               />
-            </Elements>
+</Elements>*/}
           </Route>
 
           <Route path="/myaccount">
@@ -148,4 +173,4 @@ function App({ fetchUsername }) {
   );
 }
 
-export default connect(null, { fetchUsername })(App);
+export default connect(null, { fetchUsername, authUserUID })(App);
