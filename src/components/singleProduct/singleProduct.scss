@@ -1,0 +1,90 @@
+.single__product {
+  height: max-content;
+  width: 100%;
+  display: flex;
+
+  .product__container {
+    display: flex;
+    align-items: start;
+    justify-content: space-center;
+    width: 100%;
+    margin: 10%;
+
+    .image__container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 60%;
+
+      .image__list {
+        height: max-content;
+        display: flex;
+        flex-direction: column;
+        .images {
+          margin-bottom: 20px;
+          height: min-content;
+          width: 150px;
+          height: 120px;
+          object-fit: cover;
+        }
+      }
+
+      .image__magnifier {
+        margin-left: 25px;
+        height: 100%;
+      }
+    }
+
+    .data__container {
+      max-width: 40%;
+      display: flex;
+      flex-direction: column;
+      margin-left: 50px;
+      min-height: 500px;
+      padding: 15px;
+      .data__header {
+        .data__brand {
+          color: rgb(196, 189, 189);
+          font-size: 1.5rem;
+        }
+        .data__title {
+          font-size: 2rem;
+          text-transform: capitalize;
+        }
+      }
+
+      .data__body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100px;
+        .data__description {
+          margin-top: 25px;
+          font-size: 0.9rem;
+        }
+      }
+      .data__footer {
+        min-height: 250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        .before__price {
+          text-decoration: line-through;
+        }
+        .discount__percentage {
+          color: #d32f2f;
+          font-weight: 500;
+        }
+
+        .addCart__button {
+          cursor: pointer;
+          margin-top: 15px;
+          height: 40px;
+          background-color: #388e3c;
+          color: white;
+          border-style: none;
+        }
+      }
+    }
+  }
+}

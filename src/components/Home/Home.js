@@ -6,19 +6,8 @@ import "./home.scss";
 import { searchInputAction } from "../../store/actions";
 import Product from "../../components/Product/Product";
 import ProductsList from "../../utils/Products.json";
-import { Drawer } from "@mui/material";
-import Cart from "../Cart/Cart";
 
-function Home({
-  searchInputTerm,
-  selectedCategory,
-  openCart,
-  setOpenCart,
-  processing,
-  productList,
-  totalAmount,
-  handleCartToggleDrawer,
-}) {
+function Home({ searchInputTerm, selectedCategory }) {
   const [products, setProducts] = useState([]);
 
   useEffect(async () => {
@@ -99,25 +88,6 @@ function Home({
           <p style={{ margin: "25% 150%" }}>Loading</p>
         )}
       </div>
-      <Drawer
-        PaperProps={{
-          style: { backgroundColor: "whitesmoke" },
-          sx: {
-            width: { xs: "100vw", sm: "400px" },
-          },
-        }}
-        anchor="right"
-        open={openCart}
-        onClose={(event) => handleCartToggleDrawer(false, event)}
-      >
-        <Cart
-          processing={processing}
-          productList={productList}
-          totalAmount={totalAmount}
-          openCart={openCart}
-          setOpenCart={setOpenCart}
-        />
-      </Drawer>
     </div>
   );
 }

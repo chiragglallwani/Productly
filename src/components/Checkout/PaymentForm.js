@@ -2,6 +2,7 @@ import * as React from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
+import { PaymentElement } from "@stripe/react-stripe-js";
 
 export default function PaymentForm({
   paymentFormValues,
@@ -38,6 +39,7 @@ export default function PaymentForm({
               name="cardNumber"
               label="Card number"
               fullWidth
+              helperText="ex: 4242424242424242 for Testing"
               error={paymentFormValues.cardNumber.error}
               value={
                 paymentFormValues.cardNumber.value
@@ -63,6 +65,8 @@ export default function PaymentForm({
               name="expDate"
               label="Expiry date"
               fullWidth
+              helperText="MM/YY"
+              //onChange={(e) => handleExpDateValidation(e.target.value)}
               error={paymentFormValues.expDate.error}
               value={
                 paymentFormValues.expDate.value
@@ -78,6 +82,15 @@ export default function PaymentForm({
               id="cvv"
               name="cvv"
               label="CVV"
+              sx={{
+                "input[type='number']::-webkit-outer-spin-button": {
+                  WebkitAppearance: "none",
+                },
+                "input[type=number]::-webkit-inner-spin-button": {
+                  WebkitAppearance: "none",
+                },
+                "input[type='number']": { MozAppearance: "textfield" },
+              }}
               helperText="Last three digits on signature strip"
               fullWidth
               error={paymentFormValues.cvv.error}

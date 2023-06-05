@@ -30,31 +30,58 @@ const products = [
 ];
 
 const addresses = ["1 MUI Drive", "Reactville", "Anytown", "99999", "USA"];
-const payments = [
-  { name: "Card type", detail: "Visa" },
-  { name: "Card holder", detail: "Mr John Smith" },
-  { name: "Card number", detail: "xxxx-xxxx-xxxx-1234" },
-  { name: "Expiry date", detail: "04/2024" },
-];
 
-export default function Review() {
+export default function Review({
+  totalAmount,
+  productList,
+  paymentFormValues,
+  shippingFormValues,
+  cardType,
+}) {
+  const fullName = `${shippingFormValues.firstname.value} ${shippingFormValues.lastname.value}`;
+  const address = `${shippingFormValues.address.value}, ${shippingFormValues.city.value}, ${shippingFormValues.province.value}, ${shippingFormValues.postcode.value}, ${shippingFormValues.country.value}`;
+
+  const payments = [
+    { name: "Card type", detail: cardType },
+    { name: "Card holder", detail: paymentFormValues.cardName.value },
+    {
+      name: "Card number",
+      detail:
+        paymentFormValues.cardNumber.value.slice(0, -4).replace(/./g, "X") +
+        paymentFormValues.cardNumber.value.slice(-4),
+    },
+    { name: "Expiry date", detail: paymentFormValues.expDate.value },
+  ];
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
         Order summary
       </Typography>
       <List disablePadding>
-        {products.map((product) => (
-          <ListItem key={product.name} sx={{ py: 1, px: 0 }}>
-            <ListItemText primary={product.name} secondary={product.desc} />
-            <Typography variant="body2">{product.price}</Typography>
+        {productList?.map((product) => (
+          <ListItem key={product.id} sx={{ py: 1, px: 0, display: "flex" }}>
+            <img
+              style={{
+                maxHeight: "85px",
+                padding: "10px",
+                width: "20%",
+                height: "80px",
+                objectFit: "contain",
+              }}
+              className="cart__product__image"
+              src={product.thumbnail}
+              alt="product-items"
+            />
+            <ListItemText primary={product.title} secondary={product.brand} />
+            <Typography variant="body2">${product.price}</Typography>
           </ListItem>
         ))}
 
         <ListItem sx={{ py: 1, px: 0 }}>
           <ListItemText primary="Total" />
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            $34.06
+            ${totalAmount}
           </Typography>
         </ListItem>
       </List>
@@ -63,8 +90,10 @@ export default function Review() {
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
             Shipping
           </Typography>
-          <Typography gutterBottom>John Smith</Typography>
-          <Typography gutterBottom>{addresses.join(", ")}</Typography>
+          <Typography
+            gutterBottom
+          >{`${shippingFormValues.firstname.value} ${shippingFormValues.lastname.value}`}</Typography>
+          <Typography gutterBottom>{address}</Typography>
         </Grid>
         <Grid item container direction="column" xs={12} sm={6}>
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>

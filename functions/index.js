@@ -114,6 +114,24 @@ app.get("/read", (req, res) => {
   })();
 });
 
+app.get("/readSingleProduct", (req, res) => {
+  (async () => {
+    try {
+      const response = await db
+        .collection("Products")
+        .doc(req.query.id)
+        .get()
+        .then((querySnapShot) => {
+          return querySnapShot.data();
+        });
+      return res.status(200).send(response);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  })();
+});
+
 app.get("/readOnlyCategory", (req, res) => {
   (async () => {
     try {

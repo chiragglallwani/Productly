@@ -16,11 +16,22 @@ import AddressForm from "./AddressForm";
 import PaymentForm from "./PaymentForm";
 import Review from "./Review";
 import BrandLogo from "../../assets/ProductlyLogo.png";
-import { getShippingDetails, submitShippingAddress } from "../../store/actions";
+import {
+  getShippingDetails,
+  submitShippingAddress,
+  deleteDataFromDB,
+} from "../../store/actions";
 import { connect } from "react-redux";
 import { db } from "../../firebase/firebase";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import axios from "../../API/axios";
+import { useHistory } from "react-router-dom";
+
 //const promise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISH_KEY);
 
 function Copyright() {
@@ -40,7 +51,12 @@ const steps = ["Shipping address", "Payment details", "Review your order"];
 
 const theme = createTheme();
 
-const Checkout = ({ submitShippingAddress, userUid }) => {
+const Checkout = ({
+  submitShippingAddress,
+  userUid,
+  deleteDataFromDB,
+  promise,
+}) => {
   const INITIAL_SHIPPING_FORM_STATE = {
     firstname: {
       value: "",
@@ -115,6 +131,15 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
     INITIAL_PAYMENT_FORM_STATE
   );
 
+  const [productList, setProductList] = React.useState([]);
+  const [totalAmount, setTotalAmount] = React.useState(0);
+  const [cardType, setCardtype] = React.useState("");
+  const [orderPlacing, setOrderPlacing] = React.useState(false);
+  const [paymentClientSecret, setPaymentClientSecret] = React.useState("");
+  const stripe = useStripe();
+  const elements = useElements();
+  const history = useHistory();
+
   const [activeStep, setActiveStep] = React.useState(0);
 
   React.useEffect(async () => {
@@ -125,6 +150,7 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
       .get()
       .then((querySnapShot) => {
         const shippingData = querySnapShot.data();
+        console.log("shipping Data", shippingData);
         setShippingFormValues({
           firstname: {
             ...shippingFormValues.firstname,
@@ -159,6 +185,17 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
             value: shippingData?.country,
           },
         });
+        setProductList(shippingData?.cart);
+        axios({
+          method: "post",
+          url: `/payments/create?total=${Math.round(
+            shippingData?.cartTotalAmount * 100,
+            2
+          )}`, //accept in cents if using dollar currency
+        }).then((res) => {
+          setPaymentClientSecret(res.data.clientSecret);
+        });
+        setTotalAmount(shippingData?.cartTotalAmount);
       });
     return () => unsubscribe();
   }, []);
@@ -207,9 +244,32 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
   };
 
   const handlePaymentFormChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
     let error = true;
     value !== "" ? (error = false) : (error = true);
+    if (name === "expDate") {
+      value = value
+        .replace(
+          /[^0-9]/g,
+          "" // To allow only numbers
+        )
+        .replace(
+          /^([2-9])$/g,
+          "0$1" // To handle 3 > 03
+        )
+        .replace(
+          /^(1{1})([3-9]{1})$/g,
+          "0$1/$2" // 13 > 01/3
+        )
+        .replace(
+          /^0{1,}/g,
+          "0" // To handle 00 > 0
+        )
+        .replace(
+          /^([0-1]{1}[0-9]{1})([0-9]{1,2}).*/g,
+          "$1/$2" // To handle 113 > 11/3
+        );
+    }
     setPaymentFormValues({
       ...paymentFormValues,
       [name]: {
@@ -220,9 +280,44 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
     });
   };
 
-  const handleExpDateValidation = (e) => {};
+  const handleCardNumberValidations = (ccNum) => {
+    let visaRegEx = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
+    let mastercardRegEx = /^(?:5[1-5][0-9]{14})$/;
+    let amexpRegEx = /^(?:3[47][0-9]{13})$/;
+    let discovRegEx = /^(?:6(?:011|5[0-9][0-9])[0-9]{12})$/;
+    let isValid = false;
 
-  const handleCvvValidation = (e) => {};
+    if (visaRegEx.test(ccNum)) {
+      setCardtype("Visa");
+      isValid = true;
+    } else if (mastercardRegEx.test(ccNum)) {
+      setCardtype("mastercard");
+      isValid = true;
+    } else if (amexpRegEx.test(ccNum)) {
+      setCardtype("American Express");
+      isValid = true;
+    } else if (discovRegEx.test(ccNum)) {
+      setCardtype("Discover");
+      isValid = true;
+    }
+
+    return isValid;
+  };
+
+  const handleExpDateValidation = (expDate) => {
+    const [mm, yy] = expDate.split("/");
+    const dateObj = new Date(+yy + 2000, mm - 1, 15); // months are 0 based and don't take the 1st due to timezones
+    return dateObj.getTime() > new Date().getTime();
+  };
+
+  const handleCvvValidation = (cvv) => {
+    let cvvCheck = /^[0-9]{3}$/;
+    if (cvvCheck.test(cvv)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   const handlePaymentFormSubmit = () => {
     const formFields = Object.keys(paymentFormValues);
     let newFormValues = { ...paymentFormValues }; // new State Values
@@ -231,7 +326,14 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
       const currentField = formField;
       const currentValue = paymentFormValues[currentField].value;
 
-      if (currentValue === "") {
+      if (
+        currentValue === "" ||
+        (currentField === "cardNumber" &&
+          !handleCardNumberValidations(currentValue)) ||
+        (currentField === "expDate" &&
+          !handleExpDateValidation(currentValue)) ||
+        (currentField === "cvv" && !handleCvvValidation(currentValue))
+      ) {
         newFormValues = {
           ...newFormValues,
           [currentField]: {
@@ -243,11 +345,42 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
     });
 
     setPaymentFormValues(newFormValues);
+
     let formValidate = Object.values(newFormValues).every(
       (element) => element.error === false
     );
     if (formValidate) {
       setActiveStep(activeStep + 1);
+    }
+  };
+
+  const placeOrder = async () => {
+    setOrderPlacing(true);
+    if (paymentClientSecret !== undefined) {
+      await axios({
+        method: "post",
+        url: `/payments/create?total=${Math.round(totalAmount * 100, 2)}`, //accept in cents if using dollar currency
+      }).then((res) => {
+        stripe
+          .confirmCardPayment(res.data.clientSecret, {
+            payment_method: {
+              card: elements.getElement(PaymentElement),
+              billing_details: {
+                name: `${shippingFormValues.firstname.value} ${shippingFormValues.lastname.value}`,
+                contact: shippingFormValues.contact.value,
+              },
+            },
+          })
+          .then(() => {
+            //payment confirmation
+            setOrderPlacing(false);
+            deleteDataFromDB();
+            history.replace("/home");
+          })
+          .catch((err) => console.log(err));
+        setPaymentClientSecret(res.data.clientSecret); // its asynchronous
+      });
+      console.log("payment Client Secret in Place Order", paymentClientSecret);
     }
   };
 
@@ -262,13 +395,26 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
         );
       case 1:
         return (
-          <PaymentForm
-            paymentFormValues={paymentFormValues}
-            handlePaymentFormChange={handlePaymentFormChange}
-          />
+          promise &&
+          paymentClientSecret && (
+            <Elements stripe={promise} options={{ paymentClientSecret }}>
+              <PaymentForm
+                paymentFormValues={paymentFormValues}
+                handlePaymentFormChange={handlePaymentFormChange}
+              />
+            </Elements>
+          )
         );
       case 2:
-        return <Review />;
+        return (
+          <Review
+            totalAmount={totalAmount}
+            productList={productList}
+            paymentFormValues={paymentFormValues}
+            shippingFormValues={shippingFormValues}
+            cardType={cardType}
+          />
+        );
       default:
         throw new Error("Unknown step");
     }
@@ -281,6 +427,8 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
       await handleShippingFormSubmit();
     } else if (activeStep === 1) {
       handlePaymentFormSubmit();
+    } else if (activeStep === 2) {
+      await placeOrder();
     }
     //setActiveStep(activeStep + 1);
   };
@@ -329,7 +477,7 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
           </Link>
         </Toolbar>
       </AppBar>
-      <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+      <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
         <Paper
           variant="outlined"
           sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
@@ -366,6 +514,7 @@ const Checkout = ({ submitShippingAddress, userUid }) => {
                 )}
 
                 <Button
+                  disabled={orderPlacing}
                   variant="contained"
                   onClick={(e) => handleNext(e)}
                   sx={{ mt: 3, ml: 1 }}
@@ -391,4 +540,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   getShippingDetails,
   submitShippingAddress,
+  deleteDataFromDB,
 })(Checkout);

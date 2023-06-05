@@ -99,7 +99,9 @@ function Header({
   };
 
   function handleCategory(category) {
+    history.push("/home");
     setSelectedCategory(category);
+
     handleCategoryClose();
   }
 

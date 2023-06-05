@@ -1,17 +1,20 @@
 import React from "react";
 import { connect } from "react-redux";
-import "./product.css";
 import { addToCart } from "../../store/actions";
 import { Rating } from "@mui/material";
+import { useHistory } from "react-router-dom";
+import "./product.scss";
 
 function Product({ product, addToCart }) {
-  const sendToCart = (e) => {
+  const history = useHistory();
+  const goToProductPage = (e) => {
     e.preventDefault();
-    addToCart(product, "ADD");
+    history.push(`/product/${product.id}`);
+    //addToCart(product, "ADD");
   };
 
   return (
-    <div className="product__card">
+    <div onClick={goToProductPage} className="product__card">
       <div className="product__header">
         <img className="product__image" src={product.thumbnail} alt="product" />
       </div>
@@ -20,7 +23,7 @@ function Product({ product, addToCart }) {
         <p className="description" style={{ textOverflow: "ellipsis" }}>
           {product.description}
         </p>
-        <p>
+        <p className="rating__container">
           <Rating precision={0.1} value={product.rating} readOnly />
           <span>
             {" "}
@@ -29,7 +32,7 @@ function Product({ product, addToCart }) {
             )}
           </span>
         </p>
-        <p>
+        <p className="price__container">
           Price:
           {Intl.NumberFormat("en-US", {
             style: "currency",
@@ -37,9 +40,6 @@ function Product({ product, addToCart }) {
           }).format(product.price)}
         </p>
       </div>
-      <button onClick={sendToCart} className="product__footer">
-        Add to Cart
-      </button>
     </div>
   );
 }

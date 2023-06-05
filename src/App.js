@@ -10,12 +10,18 @@ import Payment from "./components/Payment";
 import { Elements } from "@stripe/react-stripe-js";
 import UserAdmin from "./components/dashboard/UserAdmin";
 import ForgotPassword from "./components/forgotpassword/ForgotPassword";
+import SingleProduct from "./components/singleProduct/SingleProduct";
 import UserAccount from "./components/UserAccount/UserAccount";
 import Checkout from "./components/Checkout/Checkout";
 import { connect } from "react-redux";
 import { fetchUsername, authUserUID } from "./store/actions";
+import { loadStripe } from "@stripe/stripe-js";
+import { Drawer } from "@mui/material";
+import Cart from "./components/Cart/Cart";
 
-function App({ fetchUsername, authUserUID }) {
+const promise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISH_KEY);
+
+function App({ authUserUID }) {
   const [searchInput, setSearchInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [productList, setProductList] = useState([]);
@@ -119,18 +125,12 @@ function App({ fetchUsername, authUserUID }) {
               handleCartToggleDrawer={handleCartToggleDrawer}
             />
             <Home
-              processing={processing}
-              productList={productList}
-              totalAmount={totalAmount}
               selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
               setSearchInput={setSearchInput}
-              openCart={openCart}
-              setOpenCart={setOpenCart}
-              handleCartToggleDrawer={handleCartToggleDrawer}
             />
           </Route>
-          {/*<Route path="/checkout">
+
+          <Route path="/product/:id">
             <Header
               processing={processing}
               searchInput={searchInput}
@@ -140,16 +140,15 @@ function App({ fetchUsername, authUserUID }) {
               setSelectedCategory={setSelectedCategory}
               openCart={openCart}
               setOpenCart={setOpenCart}
+              handleCartToggleDrawer={handleCartToggleDrawer}
             />
-            <Checkout
-              processing={processing}
-              productList={productList}
-              totalAmount={totalAmount}
-            />
-  </Route>*/}
+            <SingleProduct />
+          </Route>
 
           <Route path="/checkout">
-            <Checkout />
+            <Elements stripe={promise}>
+              <Checkout promise={promise} />
+            </Elements>
             {/*<Elements stripe={promise}>
               <Payment
                 processing={processing}
@@ -168,6 +167,25 @@ function App({ fetchUsername, authUserUID }) {
             <UserAdmin />
           </Route>
         </Switch>
+        <Drawer
+          PaperProps={{
+            style: { backgroundColor: "whitesmoke" },
+            sx: {
+              width: { xs: "100vw", sm: "400px" },
+            },
+          }}
+          anchor="right"
+          open={openCart}
+          onClose={(event) => handleCartToggleDrawer(false, event)}
+        >
+          <Cart
+            processing={processing}
+            productList={productList}
+            totalAmount={totalAmount}
+            openCart={openCart}
+            setOpenCart={setOpenCart}
+          />
+        </Drawer>
       </div>
     </Router>
   );

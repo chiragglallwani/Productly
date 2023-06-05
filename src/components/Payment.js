@@ -5,7 +5,12 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { TextField } from "@mui/material";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+  CardElement,
+  useStripe,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
 import axios from "../API/axios";
 import { useHistory } from "react-router-dom";
 import { deleteDataFromDB } from "../store/actions";
@@ -55,11 +60,15 @@ function Payment({
     await axios({
       method: "post",
       url: `/payments/create?total=${Math.round(totalAmount * 100, 2)}`, //accept in cents if using dollar currency
-    }).then((res) => setClientSecret(res.data.clientSecret));
+    }).then((res) => {
+      console.log("clientSecret", element.getElement(CardElement));
+      setClientSecret(res.data.clientSecret);
+    });
   };
 
   useEffect(() => {
     getClientSecret();
+    console.log("card Element", CardElement.toString);
   }, [productList]);
 
   const handleModalOpen = () => setOpen(true);
@@ -73,6 +82,7 @@ function Payment({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setProcessing(true);
+    console.log("card Element", CardElement);
     if (clientSecret !== undefined) {
       await getClientSecret();
       await stripe
@@ -202,9 +212,11 @@ function Payment({
       <div className="payment__productlist">
         <h5>Review items for delivery:</h5>
         <div className="payment__productitems">
-          {productList.map((product, i) => (
-            <Cart processing={processing} key={i} product={product} />
-          ))}
+          <Cart
+            processing={processing}
+            productList={productList}
+            totalAmount={totalAmount}
+          />
         </div>
       </div>
     </div>

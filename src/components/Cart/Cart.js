@@ -104,7 +104,10 @@ function Cart({
         <div className="cart__checkout__btn">
           <button
             disabled={productList?.length === 0 ? true : false}
-            onClick={() => history.push("/checkout")}
+            onClick={() => {
+              history.push("/checkout");
+              setOpenCart(false);
+            }}
             className="payment__btn"
           >
             Checkout
