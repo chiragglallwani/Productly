@@ -1,3 +1,4 @@
+@import "../../css-styling/variable.scss";
 .single__product {
   height: max-content;
   width: 100%;
@@ -9,6 +10,12 @@
     justify-content: space-center;
     width: 100%;
     margin: 10%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+    @media screen and (width < 768px) {
+      flex-direction: column;
+      margin: 5%;
+    }
 
     .image__container {
       display: flex;
@@ -16,16 +23,54 @@
       align-items: center;
       max-width: 60%;
 
+      @media screen and (width < 1200px) {
+        max-width: 70%;
+      }
+
+      @media screen and (width < 992px) {
+        max-width: 80%;
+      }
+
+      @media screen and (width < 768px) {
+        flex-direction: column-reverse;
+        max-width: 90%;
+      }
+
+      @media screen and (width < 576px) {
+        padding-top: 20px;
+      }
+
       .image__list {
         height: max-content;
         display: flex;
         flex-direction: column;
+
+        @media screen and (width < 768px) {
+          flex-direction: row;
+          margin-top: 20px;
+        }
+
         .images {
           margin-bottom: 20px;
-          height: min-content;
+          height: fit-content;
           width: 150px;
           height: 120px;
-          object-fit: cover;
+          object-fit: contain;
+
+          @media screen and (width < 1200px) {
+            width: 120px;
+            height: 100px;
+          }
+
+          @media screen and (width < 992px) {
+            width: 120px;
+            height: 100px;
+          }
+
+          @media screen and (width < 576px) {
+            width: 50px;
+            height: 60px;
+          }
         }
       }
 
@@ -42,6 +87,21 @@
       margin-left: 50px;
       min-height: 500px;
       padding: 15px;
+
+      @media screen and (width < 1200px) {
+        max-width: 30%;
+      }
+
+      @media screen and (width < 992px) {
+        max-width: 25%;
+      }
+
+      @media screen and (width < 768px) {
+        padding: 20px 15px;
+        min-height: 300px;
+        max-width: 100%;
+      }
+
       .data__header {
         .data__brand {
           color: rgb(196, 189, 189);
@@ -68,6 +128,11 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
+
+        @media screen and (width < 768px) {
+          margin-top: 30px;
+          min-height: 130px;
+        }
         .before__price {
           text-decoration: line-through;
         }

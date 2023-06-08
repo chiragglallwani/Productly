@@ -355,9 +355,7 @@ const Checkout = ({ submitShippingAddress, userUid, promise }) => {
                 Thank you for your order.
               </Typography>
               <Typography variant="subtitle1">
-                {`Your order number is #${orderNumber}. We have emailed your order
-                confirmation, and will send you an update when your order has
-                shipped.`}
+                {`Your order number is #${orderNumber}. We will sent you an email when we shipped your order. Thank you for choosing Productly`}
               </Typography>
             </React.Fragment>
           ) : (
