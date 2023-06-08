@@ -14,37 +14,39 @@ function Home({ searchInputTerm, selectedCategory }) {
     if (selectedCategory === "" && searchInputTerm === "") {
       try {
         // For Production Purpose
-        //await api.get('/read').then(res => setProducts(res.data));
+        await api.get("/read").then((res) => setProducts(res.data));
 
         //For Developement
-        setProducts(ProductsList.products);
+        //setProducts(ProductsList.products);
       } catch (error) {
         console.log(error);
       }
     } else if (selectedCategory !== "" && searchInputTerm === "") {
       // For Production Purpose
-      //api.get(`/filter/${filterValue}`).then(res => setProducts(res.data));
+      api
+        .get(`/filter/${selectedCategory}`)
+        .then((res) => setProducts(res.data));
 
       //For Development
-      let filterArray = ProductsList.products.filter(function (item) {
+      /*let filterArray = ProductsList.products.filter(function (item) {
         return item.category
           .toUpperCase()
           .includes(selectedCategory.toUpperCase());
       });
-      setProducts(filterArray);
+      setProducts(filterArray);*/
     } else if (selectedCategory !== "" && searchInputTerm !== "") {
       // For Production Purpose
-      /*api.get(`/filter/${filterValue}`).then(res => 
-                    {
-                        let  arr = res.data.filter(function(item){
-                            return item.title.toUpperCase().includes(searchInputTerm.toUpperCase());
-                        })
-                        setProducts(arr);
-                    }
-                );*/
+      api.get(`/filter/${selectedCategory}`).then((res) => {
+        let arr = res.data.filter(function (item) {
+          return item.title
+            .toUpperCase()
+            .includes(searchInputTerm.toUpperCase());
+        });
+        setProducts(arr);
+      });
 
       // For Development
-      let filterArray = ProductsList.products.filter(function (item) {
+      /*let filterArray = ProductsList.products.filter(function (item) {
         return (
           item.category
             .toUpperCase()
@@ -52,24 +54,26 @@ function Home({ searchInputTerm, selectedCategory }) {
           item.title.toUpperCase().includes(searchInputTerm.toUpperCase())
         );
       });
-      setProducts(filterArray);
+      setProducts(filterArray);*/
     } else if (selectedCategory === "" && searchInputTerm !== "") {
       // For Production Purpose
-      /*await api.get('/read').then(res => {
-               let  arr = res.data.filter(function(item){
-                    return item.title.toUpperCase().includes(searchInputTerm.toUpperCase());
-                })
-                setProducts(arr);
-            });*/
+      await api.get("/read").then((res) => {
+        let arr = res.data.filter(function (item) {
+          return item.title
+            .toUpperCase()
+            .includes(searchInputTerm.toUpperCase());
+        });
+        setProducts(arr);
+      });
 
       //For Development
-      let arr = ProductsList.products.filter(function (item) {
+      /*let arr = ProductsList.products.filter(function (item) {
         return (
           item.title.toUpperCase().includes(searchInputTerm.toUpperCase()) ||
           item.description.toUpperCase().includes(searchInputTerm.toUpperCase())
         );
       });
-      setProducts(arr);
+      setProducts(arr);*/
     }
   }, [selectedCategory, searchInputTerm]);
 

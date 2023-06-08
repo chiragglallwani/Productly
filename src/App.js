@@ -4,9 +4,6 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import { auth, db } from "./firebase/firebase";
-//import { fetchUsername } from "./store/actions";
-//import Checkout from "./components/Checkout";
-import Payment from "./components/Payment";
 import { Elements } from "@stripe/react-stripe-js";
 import UserAdmin from "./components/dashboard/UserAdmin";
 import ForgotPassword from "./components/forgotpassword/ForgotPassword";
@@ -149,14 +146,6 @@ function App({ authUserUID }) {
             <Elements stripe={promise}>
               <Checkout promise={promise} />
             </Elements>
-            {/*<Elements stripe={promise}>
-              <Payment
-                processing={processing}
-                setProcessing={setProcessing}
-                productList={productList}
-                totalAmount={totalAmount}
-              />
-</Elements>*/}
           </Route>
 
           <Route path="/myaccount">
