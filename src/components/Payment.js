@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../css-styling/payment.css";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -55,6 +55,7 @@ function Payment({
 
   const stripe = useStripe();
   const element = useElements();
+  const paymentFormRef = useRef(null);
 
   const getClientSecret = async () => {
     await axios({
@@ -68,7 +69,6 @@ function Payment({
 
   useEffect(() => {
     getClientSecret();
-    console.log("card Element", CardElement.toString);
   }, [productList]);
 
   const handleModalOpen = () => setOpen(true);

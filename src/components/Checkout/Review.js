@@ -4,55 +4,76 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Grid from "@mui/material/Grid";
-
-const products = [
-  {
-    name: "Product 1",
-    desc: "A nice thing",
-    price: "$9.99",
-  },
-  {
-    name: "Product 2",
-    desc: "Another thing",
-    price: "$3.45",
-  },
-  {
-    name: "Product 3",
-    desc: "Something else",
-    price: "$6.51",
-  },
-  {
-    name: "Product 4",
-    desc: "Best thing of all",
-    price: "$14.11",
-  },
-  { name: "Shipping", desc: "", price: "Free" },
-];
-
-const addresses = ["1 MUI Drive", "Reactville", "Anytown", "99999", "USA"];
-
-export default function Review({
+import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { deleteDataFromDB, returnPrevOrderNumber } from "../../store/actions";
+import { connect } from "react-redux";
+import { useHistory } from "react-router-dom/";
+import firebase from "firebase";
+function Review({
   totalAmount,
   productList,
-  paymentFormValues,
   shippingFormValues,
-  cardType,
+  formRef,
+  paymentClientSecret,
+  deleteDataFromDB,
+  setInputInvalid,
+  setOrderPlacing,
+  userEmail,
+  setActiveStep,
+  activeStep,
+  setOrderNumber,
 }) {
   const fullName = `${shippingFormValues.firstname.value} ${shippingFormValues.lastname.value}`;
   const address = `${shippingFormValues.address.value}, ${shippingFormValues.city.value}, ${shippingFormValues.province.value}, ${shippingFormValues.postcode.value}, ${shippingFormValues.country.value}`;
+  const stripe = useStripe();
+  const element = useElements();
+  const history = useHistory();
 
-  const payments = [
-    { name: "Card type", detail: cardType },
-    { name: "Card holder", detail: paymentFormValues.cardName.value },
-    {
-      name: "Card number",
-      detail:
-        paymentFormValues.cardNumber.value.slice(0, -4).replace(/./g, "X") +
-        paymentFormValues.cardNumber.value.slice(-4),
-    },
-    { name: "Expiry date", detail: paymentFormValues.expDate.value },
-  ];
+  const handleChange = (e) => {
+    if (e.empty || !e.complete) {
+      setInputInvalid(true);
+    } else {
+      setInputInvalid(false);
+    }
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("handleSubmit Review");
+    if (!stripe || !element) {
+      console.log("not stripe or element");
+      return;
+    }
+    setOrderPlacing(true);
+    await stripe
+      .confirmCardPayment(paymentClientSecret, {
+        payment_method: {
+          card: element.getElement(CardElement),
+          billing_details: {
+            name: fullName,
+          },
+        },
+      })
+      .then(async () => {
+        returnPrevOrderNumber().then((res) => {
+          console.log("res", res);
+          const orders = {
+            orderNumber: res + 1,
+            items: productList,
+            totalAmount: totalAmount,
+            orderAt: firebase.firestore.Timestamp.now(),
+          };
+          setOrderNumber(res + 1);
+          deleteDataFromDB(orders, userEmail, orders.orderNumber);
+          setOrderPlacing(false);
+          setActiveStep(activeStep + 1);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        history.replace("/checkout");
+      });
+  };
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -86,33 +107,46 @@ export default function Review({
         </ListItem>
       </List>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-            Shipping
+            Shipping Address
           </Typography>
-          <Typography
-            gutterBottom
-          >{`${shippingFormValues.firstname.value} ${shippingFormValues.lastname.value}`}</Typography>
+          <Typography gutterBottom>{fullName}</Typography>
           <Typography gutterBottom>{address}</Typography>
         </Grid>
-        <Grid item container direction="column" xs={12} sm={6}>
+        <Grid item container direction="column" xs={12}>
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-            Payment details
+            Payment method
           </Typography>
-          <Grid container>
-            {payments.map((payment) => (
-              <React.Fragment key={payment.name}>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{payment.name}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{payment.detail}</Typography>
-                </Grid>
-              </React.Fragment>
-            ))}
-          </Grid>
+          <form
+            ref={formRef}
+            onSubmit={(e) => {
+              handleSubmit(e);
+            }}
+          >
+            <CardElement
+              onChange={(e) => handleChange(e)}
+              options={{
+                style: {
+                  base: {
+                    fontSize: "16px",
+                    color: "#424770",
+                    "::placeholder": {
+                      color: "#aab7c4",
+                    },
+                  },
+                  invalid: {
+                    color: "#9e2146",
+                  },
+                },
+              }}
+              id="card-element"
+            />
+          </form>
         </Grid>
       </Grid>
     </React.Fragment>
   );
 }
+
+export default connect(null, { deleteDataFromDB })(Review);

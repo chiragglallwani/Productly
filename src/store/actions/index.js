@@ -58,8 +58,6 @@ export const getShippingDetails = (auth) => async (dispatch) => {
 
 export const submitShippingAddress =
   (shippingFormValues) => async (dispatch) => {
-    console.log("shippingFormValues", shippingFormValues);
-
     const userShipmentDetails = {
       firstname: shippingFormValues.firstname.value,
       lastname: shippingFormValues.lastname.value,
@@ -196,8 +194,46 @@ export const removeFromCart = (id) => async (dispatch) => {
   });
 };
 
-export const deleteDataFromDB = () => async (dispatch) => {
-  dispatch({
-    type: "EMPTY__CART",
-  });
+export const deleteDataFromDB =
+  (orders, userEmail, orderNumber) => async (dispatch) => {
+    const data = (
+      await db.collection("ShoppingUsers").doc(auth.currentUser?.uid).get()
+    ).data();
+    let exstOrders = data?.orders;
+    await db
+      .collection("ShoppingUsers")
+      .doc(auth.currentUser?.uid)
+      .update({
+        orders: [...exstOrders, orders],
+      })
+      .catch((err) => console.log(err));
+
+    await db
+      .collection("Orders")
+      .doc(orderNumber.toString())
+      .set({
+        items: orders,
+        username: userEmail,
+        orderNumber: orderNumber,
+        createdAt: firebase.firestore.Timestamp.now(),
+      })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+    dispatch({
+      type: "EMPTY__CART",
+    });
+  };
+
+export const returnPrevOrderNumber = async () => {
+  const orderNumber = await db
+    .collection("Orders")
+    .orderBy("createdAt", "desc")
+    .limit(1)
+    .get()
+    .then((res) =>
+      res.docs.map((result) => {
+        return result.data()?.orderNumber;
+      })
+    );
+  return orderNumber[0];
 };

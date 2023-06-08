@@ -160,6 +160,17 @@ function App({ authUserUID }) {
           </Route>
 
           <Route path="/myaccount">
+            <Header
+              processing={processing}
+              searchInput={searchInput}
+              setSearchInput={setSearchInput}
+              productList={productList}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              openCart={openCart}
+              setOpenCart={setOpenCart}
+              handleCartToggleDrawer={handleCartToggleDrawer}
+            />
             <UserAccount />
           </Route>
 

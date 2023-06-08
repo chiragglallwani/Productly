@@ -31,14 +31,22 @@ app.post("/payments/create", async (request, response) => {
   const total = request.query.total;
   console.log("payment request recieved", total);
 
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: total,
-    currency: "usd",
-  });
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: total,
+      currency: "usd",
+    });
 
-  response.status(201).send({
-    clientSecret: paymentIntent.client_secret,
-  });
+    response.status(201).send({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (e) {
+    return response.status(400).send({
+      error: {
+        message: e.message,
+      },
+    });
+  }
 });
 
 //upload product images from rest api to firebase storage

@@ -1,20 +1,16 @@
 import * as React from "react";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
 import { PaymentElement } from "@stripe/react-stripe-js";
 
-export default function PaymentForm({
-  paymentFormValues,
-  handlePaymentFormChange,
-}) {
+export default function PaymentForm({ handleStripePaymentForm }) {
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
         Payment method
       </Typography>
-      <form onChange={(e) => handlePaymentFormChange(e)}>
-        <Grid container spacing={3}>
+      <form onSubmit={handleStripePaymentForm}>
+        <PaymentElement id="payment-element" />
+        {/*<Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <TextField
               required
@@ -107,7 +103,7 @@ export default function PaymentForm({
             label="Remember credit card details for next time"
           />
   </Grid>*/}
-        </Grid>
+        {/*</Grid>*/}
       </form>
     </React.Fragment>
   );

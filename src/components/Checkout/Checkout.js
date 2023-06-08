@@ -12,25 +12,21 @@ import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CloseIcon from "@mui/icons-material/Close";
 import AddressForm from "./AddressForm";
-import PaymentForm from "./PaymentForm";
 import Review from "./Review";
 import BrandLogo from "../../assets/ProductlyLogo.png";
 import {
   getShippingDetails,
   submitShippingAddress,
-  deleteDataFromDB,
+  returnPrevOrderNumber,
 } from "../../store/actions";
 import { connect } from "react-redux";
 import { db } from "../../firebase/firebase";
-import {
-  Elements,
-  PaymentElement,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import axios from "../../API/axios";
-import { useHistory } from "react-router-dom";
+import { IconButton } from "@mui/material";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 //const promise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISH_KEY);
 
@@ -47,16 +43,11 @@ function Copyright() {
   );
 }
 
-const steps = ["Shipping address", "Payment details", "Review your order"];
+const steps = ["Shipping address", "Review & Payment"];
 
 const theme = createTheme();
 
-const Checkout = ({
-  submitShippingAddress,
-  userUid,
-  deleteDataFromDB,
-  promise,
-}) => {
+const Checkout = ({ submitShippingAddress, userUid, promise }) => {
   const INITIAL_SHIPPING_FORM_STATE = {
     firstname: {
       value: "",
@@ -133,14 +124,14 @@ const Checkout = ({
 
   const [productList, setProductList] = React.useState([]);
   const [totalAmount, setTotalAmount] = React.useState(0);
-  const [cardType, setCardtype] = React.useState("");
   const [orderPlacing, setOrderPlacing] = React.useState(false);
   const [paymentClientSecret, setPaymentClientSecret] = React.useState("");
-  const stripe = useStripe();
-  const elements = useElements();
-  const history = useHistory();
-
+  const [inputInvalid, setInputInvalid] = React.useState(true);
+  const paymentFormRef = React.createRef();
   const [activeStep, setActiveStep] = React.useState(0);
+  const [userEmail, setUserEmail] = React.useState("");
+  const [orderNumber, setOrderNumber] = React.useState(0);
+  const history = useHistory();
 
   React.useEffect(async () => {
     // always make sure your currentUser.uid is defined and its value is there in userUid
@@ -150,7 +141,7 @@ const Checkout = ({
       .get()
       .then((querySnapShot) => {
         const shippingData = querySnapShot.data();
-        console.log("shipping Data", shippingData);
+
         setShippingFormValues({
           firstname: {
             ...shippingFormValues.firstname,
@@ -186,16 +177,9 @@ const Checkout = ({
           },
         });
         setProductList(shippingData?.cart);
-        axios({
-          method: "post",
-          url: `/payments/create?total=${Math.round(
-            shippingData?.cartTotalAmount * 100,
-            2
-          )}`, //accept in cents if using dollar currency
-        }).then((res) => {
-          setPaymentClientSecret(res.data.clientSecret);
-        });
+        getPaymentClientSecret(shippingData?.cartTotalAmount);
         setTotalAmount(shippingData?.cartTotalAmount);
+        setUserEmail(shippingData?.username);
       });
     return () => unsubscribe();
   }, []);
@@ -214,6 +198,17 @@ const Checkout = ({
     });
   };
 
+  const getPaymentClientSecret = (cartTotalAmount) => {
+    axios
+      .post(`/payments/create?total=${Math.round(cartTotalAmount * 100, 2)}`)
+      .then((res) => {
+        setPaymentClientSecret(res.data.clientSecret);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleShippingFormSubmit = async () => {
     const formFields = Object.keys(shippingFormValues);
     let newFormValues = { ...shippingFormValues }; // new State Values
@@ -222,7 +217,7 @@ const Checkout = ({
       const currentField = formField;
       const currentValue = shippingFormValues[currentField].value;
 
-      if (currentValue === "" && currentField !== "address2") {
+      if (currentValue === "") {
         newFormValues = {
           ...newFormValues,
           [currentField]: {
@@ -243,147 +238,6 @@ const Checkout = ({
     }
   };
 
-  const handlePaymentFormChange = (e) => {
-    let { name, value } = e.target;
-    let error = true;
-    value !== "" ? (error = false) : (error = true);
-    if (name === "expDate") {
-      value = value
-        .replace(
-          /[^0-9]/g,
-          "" // To allow only numbers
-        )
-        .replace(
-          /^([2-9])$/g,
-          "0$1" // To handle 3 > 03
-        )
-        .replace(
-          /^(1{1})([3-9]{1})$/g,
-          "0$1/$2" // 13 > 01/3
-        )
-        .replace(
-          /^0{1,}/g,
-          "0" // To handle 00 > 0
-        )
-        .replace(
-          /^([0-1]{1}[0-9]{1})([0-9]{1,2}).*/g,
-          "$1/$2" // To handle 113 > 11/3
-        );
-    }
-    setPaymentFormValues({
-      ...paymentFormValues,
-      [name]: {
-        ...paymentFormValues[name],
-        value,
-        error,
-      },
-    });
-  };
-
-  const handleCardNumberValidations = (ccNum) => {
-    let visaRegEx = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
-    let mastercardRegEx = /^(?:5[1-5][0-9]{14})$/;
-    let amexpRegEx = /^(?:3[47][0-9]{13})$/;
-    let discovRegEx = /^(?:6(?:011|5[0-9][0-9])[0-9]{12})$/;
-    let isValid = false;
-
-    if (visaRegEx.test(ccNum)) {
-      setCardtype("Visa");
-      isValid = true;
-    } else if (mastercardRegEx.test(ccNum)) {
-      setCardtype("mastercard");
-      isValid = true;
-    } else if (amexpRegEx.test(ccNum)) {
-      setCardtype("American Express");
-      isValid = true;
-    } else if (discovRegEx.test(ccNum)) {
-      setCardtype("Discover");
-      isValid = true;
-    }
-
-    return isValid;
-  };
-
-  const handleExpDateValidation = (expDate) => {
-    const [mm, yy] = expDate.split("/");
-    const dateObj = new Date(+yy + 2000, mm - 1, 15); // months are 0 based and don't take the 1st due to timezones
-    return dateObj.getTime() > new Date().getTime();
-  };
-
-  const handleCvvValidation = (cvv) => {
-    let cvvCheck = /^[0-9]{3}$/;
-    if (cvvCheck.test(cvv)) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-  const handlePaymentFormSubmit = () => {
-    const formFields = Object.keys(paymentFormValues);
-    let newFormValues = { ...paymentFormValues }; // new State Values
-
-    formFields.map((formField) => {
-      const currentField = formField;
-      const currentValue = paymentFormValues[currentField].value;
-
-      if (
-        currentValue === "" ||
-        (currentField === "cardNumber" &&
-          !handleCardNumberValidations(currentValue)) ||
-        (currentField === "expDate" &&
-          !handleExpDateValidation(currentValue)) ||
-        (currentField === "cvv" && !handleCvvValidation(currentValue))
-      ) {
-        newFormValues = {
-          ...newFormValues,
-          [currentField]: {
-            ...newFormValues[currentField],
-            error: true,
-          },
-        };
-      }
-    });
-
-    setPaymentFormValues(newFormValues);
-
-    let formValidate = Object.values(newFormValues).every(
-      (element) => element.error === false
-    );
-    if (formValidate) {
-      setActiveStep(activeStep + 1);
-    }
-  };
-
-  const placeOrder = async () => {
-    setOrderPlacing(true);
-    if (paymentClientSecret !== undefined) {
-      await axios({
-        method: "post",
-        url: `/payments/create?total=${Math.round(totalAmount * 100, 2)}`, //accept in cents if using dollar currency
-      }).then((res) => {
-        stripe
-          .confirmCardPayment(res.data.clientSecret, {
-            payment_method: {
-              card: elements.getElement(PaymentElement),
-              billing_details: {
-                name: `${shippingFormValues.firstname.value} ${shippingFormValues.lastname.value}`,
-                contact: shippingFormValues.contact.value,
-              },
-            },
-          })
-          .then(() => {
-            //payment confirmation
-            setOrderPlacing(false);
-            deleteDataFromDB();
-            history.replace("/home");
-          })
-          .catch((err) => console.log(err));
-        setPaymentClientSecret(res.data.clientSecret); // its asynchronous
-      });
-      console.log("payment Client Secret in Place Order", paymentClientSecret);
-    }
-  };
-
   function getStepContent(step) {
     switch (step) {
       case 0:
@@ -397,23 +251,25 @@ const Checkout = ({
         return (
           promise &&
           paymentClientSecret && (
-            <Elements stripe={promise} options={{ paymentClientSecret }}>
-              <PaymentForm
-                paymentFormValues={paymentFormValues}
-                handlePaymentFormChange={handlePaymentFormChange}
+            <Elements
+              stripe={promise}
+              options={{ clientSecret: paymentClientSecret }}
+            >
+              <Review
+                totalAmount={totalAmount}
+                productList={productList}
+                shippingFormValues={shippingFormValues}
+                formRef={paymentFormRef}
+                paymentClientSecret={paymentClientSecret}
+                setInputInvalid={setInputInvalid}
+                setOrderPlacing={setOrderPlacing}
+                userEmail={userEmail}
+                setActiveStep={setActiveStep}
+                activeStep={activeStep}
+                setOrderNumber={setOrderNumber}
               />
             </Elements>
           )
-        );
-      case 2:
-        return (
-          <Review
-            totalAmount={totalAmount}
-            productList={productList}
-            paymentFormValues={paymentFormValues}
-            shippingFormValues={shippingFormValues}
-            cardType={cardType}
-          />
         );
       default:
         throw new Error("Unknown step");
@@ -426,11 +282,9 @@ const Checkout = ({
       e.preventDefault();
       await handleShippingFormSubmit();
     } else if (activeStep === 1) {
-      handlePaymentFormSubmit();
-    } else if (activeStep === 2) {
-      await placeOrder();
+      //handlePaymentFormSubmit();
+      paymentFormRef.current.requestSubmit();
     }
-    //setActiveStep(activeStep + 1);
   };
 
   const handleBack = () => {
@@ -494,13 +348,16 @@ const Checkout = ({
           </Stepper>
           {activeStep === steps.length ? (
             <React.Fragment>
+              <IconButton onClick={() => history.replace("/home")}>
+                <CloseIcon />
+              </IconButton>
               <Typography variant="h5" gutterBottom>
                 Thank you for your order.
               </Typography>
               <Typography variant="subtitle1">
-                Your order number is #2001539. We have emailed your order
+                {`Your order number is #${orderNumber}. We have emailed your order
                 confirmation, and will send you an update when your order has
-                shipped.
+                shipped.`}
               </Typography>
             </React.Fragment>
           ) : (
@@ -514,7 +371,11 @@ const Checkout = ({
                 )}
 
                 <Button
-                  disabled={orderPlacing}
+                  disabled={
+                    activeStep === steps.length - 1
+                      ? orderPlacing || inputInvalid
+                      : false
+                  }
                   variant="contained"
                   onClick={(e) => handleNext(e)}
                   sx={{ mt: 3, ml: 1 }}
@@ -540,5 +401,4 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   getShippingDetails,
   submitShippingAddress,
-  deleteDataFromDB,
 })(Checkout);
