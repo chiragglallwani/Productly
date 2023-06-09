@@ -41,7 +41,7 @@ function Review({
     e.preventDefault();
     //console.log("handleSubmit Review");
     if (!stripe || !element) {
-      c; //onsole.log("not stripe or element");
+      //console.log("not stripe or element");
       return;
     }
     setOrderPlacing(true);
