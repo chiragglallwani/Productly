@@ -41,7 +41,7 @@ function App({ authUserUID }) {
             );*/
             authUserUID(authUser.uid);
           });
-        console.log("Auth User", authUser.uid);
+        //console.log("Auth User", authUser.uid);
         //window.localStorage.setItem('username',name);
       }
     });

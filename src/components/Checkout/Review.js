@@ -39,9 +39,9 @@ function Review({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("handleSubmit Review");
+    //console.log("handleSubmit Review");
     if (!stripe || !element) {
-      console.log("not stripe or element");
+      c; //onsole.log("not stripe or element");
       return;
     }
     setOrderPlacing(true);
@@ -56,7 +56,7 @@ function Review({
       })
       .then(async () => {
         returnPrevOrderNumber().then((res) => {
-          console.log("res", res);
+          //console.log("res", res);
           const orders = {
             orderNumber: res + 1,
             items: productList,

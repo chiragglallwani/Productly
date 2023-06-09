@@ -217,7 +217,6 @@ export const deleteDataFromDB =
         orderNumber: orderNumber,
         createdAt: firebase.firestore.Timestamp.now(),
       })
-      .then((res) => console.log(res))
       .catch((err) => console.log(err));
     dispatch({
       type: "EMPTY__CART",
