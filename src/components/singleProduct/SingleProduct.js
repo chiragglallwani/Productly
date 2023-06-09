@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./singleProduct.scss";
 import { useParams } from "react-router-dom";
-import ProductsList from "../../utils/Products.json";
+//import ProductsList from "../../utils/Products.json";
 import api from "../../API/axios";
 import { Box, Button, CircularProgress, Rating } from "@mui/material";
 import ReactImageMagnify from "react-image-magnify";
@@ -17,10 +17,10 @@ function SingleProduct({ addToCart }) {
   useEffect(async () => {
     setProductPageLoading(true);
     //For Production
-    //api.get(`/readSingleProduct?id=${id}`).then((res) => setProduct(res.data));
+    api.get(`/readSingleProduct?id=${id}`).then((res) => setProduct(res.data));
 
     //For Development
-    setProduct(ProductsList.products[id - 1]);
+    //setProduct(ProductsList.products[id - 1]);
     setProductPageLoading(false);
   }, []);
 

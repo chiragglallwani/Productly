@@ -5,7 +5,6 @@ import api from "../../API/axios";
 import "./home.scss";
 import { searchInputAction } from "../../store/actions";
 import Product from "../../components/Product/Product";
-import ProductsList from "../../utils/Products.json";
 
 function Home({ searchInputTerm, selectedCategory }) {
   const [products, setProducts] = useState([]);

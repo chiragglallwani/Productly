@@ -12,7 +12,7 @@ const stripe = require("stripe")(
   "sk_test_51Hd8tDDdwnwgCXY0AOK1mmc8GyAWMtAImEx2Md8xA8upHS8K2RsRMl7W1tF7Af0uYdlytCe273N0SeHDRvyl6qHP00W5xXz31h"
 );
 
-const ProductsList = require("../src/utils/Products.json");
+//const ProductsList = require("../src/utils/Products.json");
 
 // API
 
@@ -64,24 +64,24 @@ app.post("/create", (req, res) => {
       const collection = db.collection("Products");
 
       //to insert one new product use below code
-      /*collection.doc('/' + req.body.id + '/').create({
-          id: req.body.id,
-          title: req.body.title,
-          description: req.body.description,
-          price: req.body.price,
-          category: req.body.category,
-          image: req.body.image,
-          rating: {
-            rate: req.body.rating.rate,
-            count: req.body.rating.count
-          }
-      });*/
+      collection.doc("/" + req.body.id + "/").create({
+        id: req.body.id,
+        title: req.body.title,
+        description: req.body.description,
+        price: req.body.price,
+        category: req.body.category,
+        image: req.body.image,
+        rating: {
+          rate: req.body.rating.rate,
+          count: req.body.rating.count,
+        },
+      });
 
       //used 3rd party api to create products in productly db / can use any other api too make sure to the structure is same
       /*const response = await axios.get(
         "https://dummyjson.com/products/?limit=100"
       );*/
-      ProductsList.products.map((data) => {
+      /*ProductsList.products.map((data) => {
         collection.doc("/" + data.id + "/").create({
           id: data.id,
           title: data.title,
@@ -95,7 +95,7 @@ app.post("/create", (req, res) => {
           images: data.images,
           rating: data.rating,
         });
-      });
+      });*/
       return res.status(200).send("Product Created");
     } catch (error) {
       console.log(error);
